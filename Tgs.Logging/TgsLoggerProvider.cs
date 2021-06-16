@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Tgs.Logging
 {
@@ -9,9 +10,12 @@ namespace Tgs.Logging
 		private readonly ConcurrentDictionary<string, TgsLogger> _loggers = new();
 		private readonly TgsLogBackgroundProcessor<LogRecordEvent> _tgsLogBackgroundProcessor;
 
-		public TgsLoggerProvider(TgsLogBackgroundProcessor<LogRecordEvent> tgsLogBackgroundProcessor)
+		public TgsLoggerProvider(
+			TgsLogBackgroundProcessor<LogRecordEvent> tgsLogBackgroundProcessor,
+			IOptionsMonitor<TgsLoggerOptions> optionsAccessor)
 		{
 			_tgsLogBackgroundProcessor = tgsLogBackgroundProcessor ?? throw new System.ArgumentNullException(nameof(tgsLogBackgroundProcessor));
+			optionsAccessor.OnChange(ReloadLoggerOptions);
 		}
 
 		public ILogger CreateLogger(string categoryName)
@@ -20,5 +24,10 @@ namespace Tgs.Logging
 				name => new TgsLogger(categoryName, _tgsLogBackgroundProcessor));
 
 		public void Dispose() => _loggers.Clear();
+
+		private void ReloadLoggerOptions(TgsLoggerOptions options)
+		{
+			_loggers.Clear();
+		}
 	}
 }

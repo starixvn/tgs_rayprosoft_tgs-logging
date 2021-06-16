@@ -20,7 +20,7 @@ namespace Tgs.Logging
 
 		[Key("line")]
 		[DataMember(EmitDefaultValue = false)]
-		public int? Line { get; set; }
+		public int Line { get; set; }
 
 		[Key("logger")]
 		public string Logger { get; set; } = default!;
@@ -40,6 +40,6 @@ namespace Tgs.Logging
 		public string ServerName { get; set; } = default!;
 
 		[Key("trackingid")]
-		public Guid? TrackingId { get; set; }
+		public Guid TrackingId { get; set; }
 	}
 }

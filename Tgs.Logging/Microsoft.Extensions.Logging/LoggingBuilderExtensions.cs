@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging.Configuration;
 using Tgs.Logging;
+using Tgs.MessageQueue;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -11,8 +13,22 @@ namespace Microsoft.Extensions.Logging
 			builder.Services.TryAddEnumerable(
 				ServiceDescriptor.Singleton<ILoggerProvider, TgsLoggerProvider>());
 
+			LoggerProviderOptions.RegisterProviderOptions<TgsLoggerOptions, TgsLoggerProvider>(builder.Services);
+
 			builder.Services
-				.Add(ServiceDescriptor.Singleton(typeof(TgsLogBackgroundProcessor<>)));
+				.AddSingleton(
+					sp => new TgsLogBackgroundProcessor<LogRecordEvent>(
+						"LogRecordEvent",
+						sp.GetRequiredService<IMessageSender>()))
+				.AddSingleton(
+					sp => new TgsLogBackgroundProcessor<AdminLogEvent>(
+						"AdminLogEvent",
+						sp.GetRequiredService<IMessageSender>()))
+				.AddSingleton(
+					sp => new TgsLogBackgroundProcessor<ApiLogEvent>(
+						"ApiLogEvent",
+						sp.GetRequiredService<IMessageSender>()));
+
 
 			builder.Services
 				.AddTransient<ITgsLog, TgsLog>();
