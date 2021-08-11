@@ -1,34 +1,25 @@
 ﻿using System;
 using MessagePack;
 
-namespace Tgs.LogApi
+namespace Tgs.Logging
 {
-	[MessagePackObject()]
-	public class AdminLogEvent
+	[MessagePackObject]
+	public class ApiLogEvent
 	{
-		[Key("description")]
-		public string Description { get; set; } = default!;
-
-		[Key("exception")]
-		public string? Exception { get; set; }
-
 		[Key("executiontimems")]
 		public int ExecutionTimeMs { get; set; }
 
-		[Key("host")]
-		public string Host { get; set; } = default!;
-
-		[Key("innerexception")]
-		public string? InnerException { get; set; }
-
-		[Key("ipaddress")]
-		public string IpAddress { get; set; } = default!;
+		[Key("ip")]
+		public string Ip { get; set; } = default!;
 
 		[Key("method")]
 		public string Method { get; set; } = default!;
 
 		[Key("path")]
 		public string Path { get; set; } = default!;
+
+		[Key("prefix")]
+		public string Prefix { get; set; } = default!;
 
 		[Key("recordedon")]
 		public DateTimeOffset RecordedOn { get; set; }
@@ -40,7 +31,7 @@ namespace Tgs.LogApi
 		public string RequestHeaders { get; set; } = default!;
 
 		[Key("responsecode")]
-		public short ResponseCode { get; set; } = default!;
+		public short ResponseCode { get; set; }
 
 		[Key("responsecontent")]
 		public string ResponseContent { get; set; } = default!;
@@ -50,9 +41,6 @@ namespace Tgs.LogApi
 
 		[Key("servername")]
 		public string ServerName { get; set; } = default!;
-
-		[Key("StackTrace")]
-		public string? StackTrace { get; set; }
 
 		[Key("trackingid")]
 		public Guid TrackingId { get; set; }

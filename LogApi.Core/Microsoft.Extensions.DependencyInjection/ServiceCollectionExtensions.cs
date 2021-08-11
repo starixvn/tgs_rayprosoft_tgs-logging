@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using Tgs.LogApi;
 using Tgs.LogApi.Configuration;
+using Tgs.LogApi.MessageQueue;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,6 +24,19 @@ namespace Microsoft.Extensions.DependencyInjection
 				.AddHostedService<LogRecordBackgroundService>()
 				.RegisterAllServiceUtilityTypes(
 					Assembly.GetExecutingAssembly(),
-					ServiceLifetime.Transient));
+					ServiceLifetime.Transient)
+				.AddNatsMessageQueue(config =>
+				{
+					config
+						.ConfigQueueOptions((options, sp) =>
+						{
+							var logApiOptions = sp.GetRequiredService<IOptions<LogApiOptions>>().Value;
+
+							options.Url = logApiOptions.NatsUrl;
+						})
+						.AddHandler<ApiLogHandler>("ApiLogEvent", "TgsLogQueue")
+						.AddHandler<AdminLogHandler>("AdminLogEvent", "TgsLogQueue")
+						.AddHandler<LogRecordHandler>("LogRecordEvent", "TgsLogQueue");
+				}));
 	}
 }

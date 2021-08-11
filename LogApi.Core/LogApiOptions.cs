@@ -1,4 +1,5 @@
 ﻿using System;
+using Tgs.Logging;
 
 namespace Tgs.LogApi
 {
@@ -9,5 +10,7 @@ namespace Tgs.LogApi
 		public TgsLogLevel LogLevel { set; get; }
 
 		public string[] UnrestrictedLoggers { set; get; } = Array.Empty<string>();
+
+		public string NatsUrl { get; set; } = "nats://localhost:4222";
 	}
 }

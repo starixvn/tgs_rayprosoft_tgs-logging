@@ -15,13 +15,6 @@ namespace TGS.Apis.LogApi
 {
 	public class Startup
 	{
-		private readonly IConfiguration _configuration;
-
-		public Startup(IConfiguration configuration)
-		{
-			_configuration = configuration;
-		}
-
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
 		{
 			app.UseRouting();
@@ -49,6 +42,8 @@ namespace TGS.Apis.LogApi
 						var config = sp.GetRequiredService<IConfiguration>();
 
 						config.GetSection("LoggerServiceConfig").Bind(options);
+
+						options.NatsUrl = config.GetValue<string>("NatsSetting:Urls");
 					})
 				.AddDbTgsRepository(
 					(sp, dbBuilder) =>

@@ -9,7 +9,7 @@ namespace Tgs.Logging
 	{
 		[Key("exception")]
 		[DataMember(EmitDefaultValue = false)]
-		public string? Exception { get; set; }
+		public string Exception { get; set; } = default!;
 
 		[Key("file")]
 		[DataMember(EmitDefaultValue = false)]
@@ -31,7 +31,7 @@ namespace Tgs.Logging
 
 		[Key("message")]
 		[DataMember(EmitDefaultValue = false)]
-		public string? Message { get; set; }
+		public string Message { get; set; } = default!;
 
 		[Key("recordedon")]
 		public DateTimeOffset RecordedOn { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MessagePack;
+using Tgs.Logging;
 using Tgs.MessageQueue;
 
 namespace Tgs.LogApi.MessageQueue

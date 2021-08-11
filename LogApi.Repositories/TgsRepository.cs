@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Tgs.LogApi.Repositories.Entities;
 using Tgs.NotifyService.Client;
 using TGS.NotifyApi.Messages;
+using Tgs.Logging;
 
 namespace Tgs.LogApi.Repositories
 {

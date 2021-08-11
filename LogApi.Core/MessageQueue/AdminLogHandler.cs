@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MessagePack;
 using Tgs.MessageQueue;
+using Tgs.Logging;
 
 namespace Tgs.LogApi.MessageQueue
 {

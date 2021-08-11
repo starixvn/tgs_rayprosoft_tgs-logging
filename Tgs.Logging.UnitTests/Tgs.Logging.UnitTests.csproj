@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LogApi.Models\LogApi.Models.csproj" />
     <ProjectReference Include="..\Tgs.Logging\Tgs.Logging.csproj" />
   </ItemGroup>
 
