@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi", "LogApi\LogApi.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotifyServiceClient", "NotifyServiceClient\NotifyServiceClient.csproj", "{6C810982-693F-4D34-BA63-C42748F1BD0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogApi.Core", "LogApi.Core\LogApi.Core.csproj", "{8ACF1C41-3A48-4AB8-A3D0-61644C8A2F50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Core", "LogApi.Core\LogApi.Core.csproj", "{8ACF1C41-3A48-4AB8-A3D0-61644C8A2F50}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Repositories", "LogApi.Repositories\LogApi.Repositories.csproj", "{DC7F2347-0F67-4892-8408-EC85B3102B1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{8ACF1C41-3A48-4AB8-A3D0-61644C8A2F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ACF1C41-3A48-4AB8-A3D0-61644C8A2F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ACF1C41-3A48-4AB8-A3D0-61644C8A2F50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC7F2347-0F67-4892-8408-EC85B3102B1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC7F2347-0F67-4892-8408-EC85B3102B1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC7F2347-0F67-4892-8408-EC85B3102B1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC7F2347-0F67-4892-8408-EC85B3102B1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
