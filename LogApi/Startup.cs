@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,12 +42,38 @@ namespace TGS.Apis.LogApi
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddNotifyClient((options, sp) =>
-			{
-				var config = sp.GetRequiredService<IConfiguration>();
+			services
+				.AddLogApi(
+					(options, sp) =>
+					{
+						var config = sp.GetRequiredService<IConfiguration>();
 
-				config.GetSection("Notify").Bind(options);
-			});
+						config.GetSection("LoggerServiceConfig").Bind(options);
+					})
+				.AddDbTgsRepository(
+					(sp, dbBuilder) =>
+					{
+						var config = sp.GetRequiredService<IConfiguration>();
+
+						dbBuilder.UseLazyLoadingProxies();
+
+						dbBuilder.UseNpgsql(
+							config.GetConnectionString("Tgs"),
+							serverOption =>
+							{
+								serverOption.SetPostgresVersion(12, 5);
+								serverOption.CommandTimeout(180);
+								serverOption.UseTrigrams();
+							});
+
+						dbBuilder.UseSnakeCaseNamingConvention();
+					},
+					(options, sp) =>
+					{
+						var config = sp.GetRequiredService<IConfiguration>();
+
+						config.GetSection("Notify").Bind(options);
+					});
 
 			services
 				.AddControllers(options =>
@@ -70,9 +97,9 @@ namespace TGS.Apis.LogApi
 					};
 				});
 
-			services.AddHealthChecks()
+			services
+				.AddHealthChecks()
 				.ForwardToPrometheus();
-			;
 		}
 	}
 }
