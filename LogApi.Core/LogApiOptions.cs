@@ -1,4 +1,5 @@
 ﻿using System;
+using MessagePack;
 using Tgs.Logging;
 
 namespace Tgs.LogApi
@@ -12,5 +13,8 @@ namespace Tgs.LogApi
 		public string[] UnrestrictedLoggers { set; get; } = Array.Empty<string>();
 
 		public string NatsUrl { get; set; } = "nats://localhost:4222";
+
+		public MessagePackSerializerOptions SerializerOptions { get; set; } =
+			MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 	}
 }

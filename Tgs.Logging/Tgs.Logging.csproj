@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<Version>0.0.8</Version>
 		<Authors>Raypro</Authors>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,12 +22,16 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\LogApi.Models\LogApi.Models.csproj">
-		  <PrivateAssets>All</PrivateAssets>
+		  <PrivateAssets>all</PrivateAssets>
 		</ProjectReference>
 	</ItemGroup>
 
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-logging</PackageProjectUrl>
+		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-logging.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>Logging</PackageTags>
 	</PropertyGroup>
 
 	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
