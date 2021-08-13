@@ -78,7 +78,7 @@ pipeline {
                 ImageName="${Registry}log-api"
             }
 			steps {
-                sh 'dotnet build "src/Apis/LogApi" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
+                sh 'dotnet build "Apis/LogApi" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
                 sh 'docker push $ImageName:${TAG}'
 			}
         }
