@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Models", "LogApi.Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.UnitTests", "LogApi.UnitTests\LogApi.UnitTests.csproj", "{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogApi.Repositories.UnitTests", "LogApi.Repositories.UnitTests\LogApi.Repositories.UnitTests.csproj", "{74B0B053-5209-44B4-B6BA-E05B21F77051}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Repositories.UnitTests", "LogApi.Repositories.UnitTests\LogApi.Repositories.UnitTests.csproj", "{74B0B053-5209-44B4-B6BA-E05B21F77051}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogApi.IntegrationTests", "LogApi.IntegrationTests\LogApi.IntegrationTests.csproj", "{9C257665-A4DA-4241-8795-F5C46A18FA29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
