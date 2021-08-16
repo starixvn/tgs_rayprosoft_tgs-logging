@@ -91,12 +91,6 @@ pipeline {
         }
 
 		stage('Deploy log-api') { 
-            when {
-                expression {
-                    return false;
-                }
-            }
-
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
                     sh '''
@@ -130,11 +124,9 @@ pipeline {
                 }
             }		
             steps {
-                withCredentials([gitUsernamePassword(
-                    credentialsId: 'gitssh-user-pwd',
-                    gitToolName: 'git-tool')]) {
+                sshagent(['ssh-jenkins']) {
                     sh "git tag -a ${TAG} -m ${TAG}"
-                    sh "git push ${TAG}"
+                    sh "git push git@gitlab.com:rayprosoft/tgs-logging.git ${TAG} HEAD:${GIT_BRANCH}"
                 }
             }
         }
