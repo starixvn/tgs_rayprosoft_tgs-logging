@@ -147,7 +147,7 @@ namespace Tgs.Logging
 				Level = level,
 				Logger = _loggerName,
 				Message = message,
-				Exception = exception?.ToString(),
+				Exception = exception?.ToString() ?? string.Empty,
 				File = callerFile,
 				Member = callerMember,
 				Line = lineNumber

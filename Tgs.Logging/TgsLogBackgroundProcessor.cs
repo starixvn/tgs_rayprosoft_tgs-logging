@@ -19,8 +19,8 @@ namespace Tgs.Logging
 
 		public TgsLogBackgroundProcessor(string subject, IMessageSender messageSender)
 		{
-			_subject = subject ?? throw new System.ArgumentNullException(nameof(subject));
-			_messageSender = messageSender ?? throw new System.ArgumentNullException(nameof(messageSender));
+			_subject = subject ?? throw new ArgumentNullException(nameof(subject));
+			_messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
 			_ = BeginProcessLogAsync();
 		}
 
@@ -54,8 +54,7 @@ namespace Tgs.Logging
 			foreach (var record in _logRecordEvents.GetConsumingEnumerable())
 			{
 				var data = MessagePackSerializer.Serialize(record, _messagePackSerializerOptions);
-				_ = _messageSender
-					.PublishAsync(_subject, data);
+				_ = _messageSender.PublishAsync(_subject, data);
 			}
 		});
 	}

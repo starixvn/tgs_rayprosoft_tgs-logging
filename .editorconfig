@@ -1,6 +1,11 @@
 # 如果要從更高的目錄繼承 .editorconfig 設定，請移除以下行
 root = true
 
+[Jenkinsfile]
+indent_size = 4
+indent_style = space
+tab_width = 4
+
 # C# 檔案
 [*.cs]
 
@@ -8,7 +13,7 @@ root = true
 
 # 縮排和間距
 indent_size = 4
-indent_style = tab
+indent_style = space
 tab_width = 4
 
 # 新行喜好設定
