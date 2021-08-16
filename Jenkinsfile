@@ -79,7 +79,7 @@ pipeline {
 
 		stage('Building docker image') {
 			steps {
-                sh 'dotnet build "Apis/LogApi" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
+                sh 'dotnet build "LogApi" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
 			}
         }
 
