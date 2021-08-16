@@ -90,6 +90,12 @@ pipeline {
         }
 
 		stage('Deploy log-api') { 
+            when {
+                expression {
+                    return false;
+                }
+            }
+
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
                     sh '''
