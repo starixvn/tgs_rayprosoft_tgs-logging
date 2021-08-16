@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tgs.LogApi;
 using Tgs.LogApi.Repositories.Entities;
 
 namespace LogApi.IntegrationTests
@@ -28,6 +29,11 @@ namespace LogApi.IntegrationTests
 						.ConfigureTestServices(services =>
 						{
 							services
+								.Configure<LogApiOptions>(options =>
+								{
+									options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+									options.UnrestrictedLoggers = Array.Empty<string>();
+								})
 								.AddFakeNatsMessageQueue()
 								.AddSingleton<TgsContext>(sp =>
 								{
