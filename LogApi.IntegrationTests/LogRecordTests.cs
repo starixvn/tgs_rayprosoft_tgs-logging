@@ -131,7 +131,7 @@ namespace LogApi.IntegrationTests
 
 			sut.LogInfo("test", null, "file", "member", 0);
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(1));
+			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
 		}
 	}
 }
