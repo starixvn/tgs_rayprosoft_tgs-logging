@@ -5,6 +5,7 @@ pipeline {
 	environment {
 		ImageName = "registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api"
 		BuildConfiguration = 'Debug'
+        ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2154485/tags"
 	}
 
     stages {
