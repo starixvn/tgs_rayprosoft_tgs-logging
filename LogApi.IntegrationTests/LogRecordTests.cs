@@ -100,11 +100,9 @@ namespace LogApi.IntegrationTests
 				{
 					var data = callInfo.Arg<byte[]>();
 
-					return new ValueTask(Task.Run(async () =>
-					{
-						await handler.HandleAsync(data);
-					}));
-					;
+					handler.HandleAsync(data).GetAwaiter().GetResult();
+
+					return ValueTask.CompletedTask;
 				});
 
 			fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
