@@ -129,9 +129,11 @@ namespace LogApi.IntegrationTests
 				adminLogProcessor,
 				apiLogProcessor);
 
+			sut.SetLogger("test");
+
 			sut.LogInfo("test", null, "file", "member", 0);
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(2));
+			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(1));
 		}
 	}
 }
