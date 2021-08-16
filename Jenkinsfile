@@ -126,7 +126,7 @@ pipeline {
             steps {
                 sshagent(['ssh-jenkins']) {
                     sh "git tag -a ${TAG} -m ${TAG}"
-                    sh "git push git@gitlab.com:rayprosoft/tgs-logging.git ${TAG} HEAD:${GIT_BRANCH}"
+                    sh "git push ${GIT_URL} ${TAG} HEAD:${GIT_BRANCH}"
                 }
             }
         }
