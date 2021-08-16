@@ -1,15 +1,15 @@
 def message = "";
 pipeline {
     agent any
-	
-	environment {
-		ImageName = "registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api"
-		BuildConfiguration = 'Debug'
+    
+    environment {
+        ImageName = "registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api"
+        BuildConfiguration = 'Debug'
         ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2154485/tags"
-	}
+    }
 
     stages {
-		stage('Prepare') {
+        stage('Prepare') {
             steps {
                 sh "echo 'Branch: $GIT_BRANCH'";
 
@@ -32,11 +32,11 @@ pipeline {
                 }
 
                 configFileProvider([
-					configFile(
-						fileId: 'tgs.' + env.kube_ns , 
-						variable: 'tgsconfig')]) {
-					script {
-						def envItems = readProperties file: "$tgsconfig";
+                    configFile(
+                        fileId: 'tgs.' + env.kube_ns , 
+                        variable: 'tgsconfig')]) {
+                    script {
+                        def envItems = readProperties file: "$tgsconfig";
 
                         envItems.each { key, value -> 
                             env."tgs_${key}" = value;
@@ -46,8 +46,8 @@ pipeline {
                         message += "\nBranch: ${env.GIT_BRANCH}" 
                         message += "\nTag: ${env.TAG}"
                         message += "\nEnv: ${env.kube_ns}"
-					}
-				}
+                    }
+                }
 
                 sh "echo tag: $TAG"
             }
@@ -59,29 +59,29 @@ pipeline {
             }
         }
 
-		stage('Test') {
-			steps {
-				sh 'dotnet test -c $BuildConfiguration -l trx --no-build'
-			}
-		}
-		
-		stage('Push packages') {
-			when {
+        stage('Test') {
+            steps {
+                sh 'dotnet test -c $BuildConfiguration -l trx --no-build'
+            }
+        }
+        
+        stage('Push packages') {
+            when {
                 expression {
                     return env.kube_ns == 'dev';
                 }
             }
 
-			steps {
-				sh 'dotnet pack -c $BuildConfiguration "Tgs.Logging/Tgs.Logging.csproj" --no-restore'
-				sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" --source "raypro" --skip-duplicate'
-			}
-		}
+            steps {
+                sh 'dotnet pack -c $BuildConfiguration "Tgs.Logging/Tgs.Logging.csproj" --no-restore'
+                sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" --source "raypro" --skip-duplicate'
+            }
+        }
 
-		stage('Building docker image') {
-			steps {
+        stage('Building docker image') {
+            steps {
                 sh 'dotnet build "LogApi" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
-			}
+            }
         }
 
         stage('Push docker image') {
@@ -90,7 +90,7 @@ pipeline {
             }
         }
 
-		stage('Deploy log-api') { 
+        stage('Deploy log-api') { 
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
                     sh '''
@@ -133,25 +133,25 @@ pipeline {
 
         stage('Remove Image Tags') {					
             steps {	
-			    withCredentials([string(credentialsId: "GitLabToken", variable: "GitLabToken")]) {
+                withCredentials([string(credentialsId: "GitLabToken", variable: "GitLabToken")]) {
                     sh "curl --request DELETE --data \'name_regex_delete=.*\' --data \'keep_n=10\' --header \'PRIVATE-TOKEN: ${GitLabToken}\' ${ImageTagUrl}"
                 }
             }
         }
-	}
+    }
 
-	post {
-		success {
+    post {
+        success {
              sendTelegram("Pipeline: ${currentBuild.fullDisplayName} OK! ${message} \n${currentBuild.getBuildCauses()[0].shortDescription}\n")
         }
         failure {
             sendTelegram("<b>Failed Pipeline:</b> ${currentBuild.fullDisplayName} Something is wrong with ${env.BUILD_URL}/console\n${currentBuild.getBuildCauses()[0].shortDescription}\n")
         }
 
-		always {
-			step([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
-		}
-	}
+        always {
+            step([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
+        }
+    }
 }
 
 def sendTelegram(message) {
