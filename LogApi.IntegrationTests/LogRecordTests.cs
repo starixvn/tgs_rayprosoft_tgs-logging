@@ -13,125 +13,123 @@ using Tgs.MessageQueue;
 
 namespace LogApi.IntegrationTests
 {
-	[TestFixture]
-	public class LogRecordTests
-	{
-		[Test]
-		public async Task Send_LogRecordEvent_By_Logger()
-		{
-			var tcs = new TaskCompletionSource();
-			var fakeTgsRepository = Substitute.For<ITgsRepository>();
+    [TestFixture]
+    public class LogRecordTests
+    {
+        [Test]
+        public async Task Send_LogRecordEvent_By_Logger()
+        {
+            var tcs = new TaskCompletionSource();
+            var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-			using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
-			{
-				services
-					.AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-					.AddSingleton(fakeTgsRepository);
-			});
+            using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
+            {
+                services
+                    .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                    .AddSingleton(fakeTgsRepository);
+            });
 
-			_ = testHost.StartAsync();
+            _ = testHost.StartAsync();
 
-			await Task.Delay(1000);
+            await Task.Delay(1000);
 
-			var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
+            var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
 
-			var fakeMessageSender = Substitute.For<IMessageSender>();
+            var fakeMessageSender = Substitute.For<IMessageSender>();
 
-			fakeMessageSender
-				.PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>())
-				.Returns(callInfo =>
-				{
-					var data = callInfo.Arg<byte[]>();
+            fakeMessageSender
+                .PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>())
+                .Returns(callInfo =>
+                {
+                    var data = callInfo.Arg<byte[]>();
 
-					return new ValueTask(Task.Run(async () =>
-					{
-						await handler.HandleAsync(data);
-					}));
-					;
-				});
+                    handler.HandleAsync(data).GetAwaiter().GetResult();
 
-			fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
-				.Returns(callInfo =>
-				{
-					tcs.SetResult();
-					return ValueTask.CompletedTask;
-				});
+                    return ValueTask.CompletedTask;
+                });
 
-			var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
-				"LogRecordEvent",
-				fakeMessageSender);
-			var fakeOptionsMonitor = Substitute.For<IOptionsMonitor<TgsLoggerOptions>>();
+            fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
+                .Returns(callInfo =>
+                {
+                    tcs.SetResult();
+                    return ValueTask.CompletedTask;
+                });
 
-			var loggerProvider = new TgsLoggerProvider(
-				logRecordProcessor,
-				fakeOptionsMonitor);
+            var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
+                "LogRecordEvent",
+                fakeMessageSender);
+            var fakeOptionsMonitor = Substitute.For<IOptionsMonitor<TgsLoggerOptions>>();
 
-			var sut = loggerProvider.CreateLogger("test");
+            var loggerProvider = new TgsLoggerProvider(
+                logRecordProcessor,
+                fakeOptionsMonitor);
 
-			sut.LogInformation("test");
+            var sut = loggerProvider.CreateLogger("test");
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(1));
-		}
+            sut.LogInformation("test");
 
-		[Test]
-		public async Task Send_LogRecordEvent_By_TgsLog()
-		{
-			var tcs = new TaskCompletionSource();
-			var fakeTgsRepository = Substitute.For<ITgsRepository>();
+            await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
+        }
 
-			using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
-			{
-				services
-					.AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-					.AddSingleton(fakeTgsRepository);
-			});
+        [Test]
+        public async Task Send_LogRecordEvent_By_TgsLog()
+        {
+            var tcs = new TaskCompletionSource();
+            var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-			_ = testHost.StartAsync();
+            using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
+            {
+                services
+                    .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                    .AddSingleton(fakeTgsRepository);
+            });
 
-			await Task.Delay(1000);
+            _ = testHost.StartAsync();
 
-			var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
+            await Task.Delay(1000);
 
-			var fakeMessageSender = Substitute.For<IMessageSender>();
+            var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
 
-			fakeMessageSender
-				.PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>())
-				.Returns(callInfo =>
-				{
-					var data = callInfo.Arg<byte[]>();
+            var fakeMessageSender = Substitute.For<IMessageSender>();
 
-					handler.HandleAsync(data).GetAwaiter().GetResult();
+            fakeMessageSender
+                .PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>())
+                .Returns(callInfo =>
+                {
+                    var data = callInfo.Arg<byte[]>();
 
-					return ValueTask.CompletedTask;
-				});
+                    handler.HandleAsync(data).GetAwaiter().GetResult();
 
-			fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
-				.Returns(callInfo =>
-				{
-					tcs.SetResult();
-					return ValueTask.CompletedTask;
-				});
+                    return ValueTask.CompletedTask;
+                });
 
-			var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
-				"LogRecordEvent",
-				fakeMessageSender);
-			var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
-				"AdminLogEvent",
-				fakeMessageSender);
-			var apiLogProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
-				"ApiLogEvent",
-				fakeMessageSender);
+            fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
+                .Returns(callInfo =>
+                {
+                    tcs.SetResult();
+                    return ValueTask.CompletedTask;
+                });
 
-			var sut = new TgsLog(
-				logRecordProcessor,
-				adminLogProcessor,
-				apiLogProcessor);
+            var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
+                "LogRecordEvent",
+                fakeMessageSender);
+            var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
+                "AdminLogEvent",
+                fakeMessageSender);
+            var apiLogProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
+                "ApiLogEvent",
+                fakeMessageSender);
 
-			sut.SetLogger("test");
+            var sut = new TgsLog(
+                logRecordProcessor,
+                adminLogProcessor,
+                apiLogProcessor);
 
-			sut.LogInfo("test", null, "file", "member", 0);
+            sut.SetLogger("test");
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
-		}
-	}
+            sut.LogInfo("test", null, "file", "member", 0);
+
+            await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
+        }
+    }
 }
