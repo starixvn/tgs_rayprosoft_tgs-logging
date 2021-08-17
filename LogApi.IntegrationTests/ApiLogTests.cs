@@ -73,7 +73,7 @@ namespace LogApi.IntegrationTests
 
 			sut.LogApi(new ApiLogEvent());
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(1));
+			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
 		}
 	}
 }
