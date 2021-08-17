@@ -31,7 +31,7 @@ namespace Tgs.LogApi.Repositories
                 .Select(logEvent => new AdminLog
                 {
                     Id = Guid.NewGuid(),
-                    Description = logEvent.Description,
+                    Description = logEvent.Description ?? string.Empty,
                     Exception = logEvent.Exception,
                     ExecutionTimeMs = logEvent.ExecutionTimeMs,
                     InnerException = logEvent.InnerException,
