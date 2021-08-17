@@ -132,7 +132,7 @@ namespace Tgs.LogApi.Repositories
                 .Select(log => new LogRecord
                 {
                     Id = Guid.NewGuid(),
-                    Exception = log.Exception,
+                    Exception = log.Exception ?? string.Empty,
                     Level = (int)log.Level,
                     Logger = log.Logger,
                     Message = log.Message,

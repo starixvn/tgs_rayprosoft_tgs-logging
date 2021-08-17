@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
 			Action<NotifyClientOptions, IServiceProvider> notifyConfigure)
 		{
 			configuration.Services
-				.AddDbContextPool<TgsContext>(efConfigure)
+				.AddDbContext<TgsContext>(efConfigure)
 				.AddNotifyClient(notifyConfigure);
 
 			return configuration
