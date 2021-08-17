@@ -72,7 +72,7 @@ namespace LogApi.IntegrationTests
 
 			sut.LogAdmin(new AdminLogEvent());
 
-			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(1));
+			await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
 		}
 	}
 }
