@@ -42,7 +42,7 @@ namespace Tgs.LogApi.Repositories
                     RequestContent = logEvent.RequestContent,
                     RequestHeaders = logEvent.RequestHeaders,
                     ResponseCode = logEvent.ResponseCode,
-                    ResponseContent = logEvent.ResponseContent,
+                    ResponseContent = logEvent.ResponseContent ?? string.Empty,
                     ResponseHeaders = logEvent.ResponseHeaders,
                     ServerName = logEvent.ServerName,
                     StackTrace = logEvent.StackTrace,
