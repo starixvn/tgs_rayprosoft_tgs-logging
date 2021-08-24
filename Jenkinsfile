@@ -90,6 +90,22 @@ pipeline {
             }
         }
 
+        stage('Deploy') {
+            when {
+                expression {
+                    return env.kube_ns == 'prod';
+                }
+            }
+
+            steps {
+                script {
+                    input message: 'Ready to go?', ok: 'yes';
+                }
+                
+                sh "echo start deploy"
+            }
+        }
+
         stage('Deploy log-api') { 
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
