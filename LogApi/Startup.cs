@@ -13,88 +13,90 @@ using TGS.Apis.LogApi.Filters;
 
 namespace TGS.Apis.LogApi
 {
-	public class Startup
-	{
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
-		{
-			app.UseRouting();
+    public class Startup
+    {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
+        {
+            app.UseRouting();
 
-			app.UseHttpMetrics();
+            app.UseHttpMetrics();
 
-			app.UseAuthorization();
+            app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
 
-				endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health");
 
-				endpoints.MapMetrics();
-			});
-		}
+                endpoints.MapMetrics();
+            });
+        }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services
-				.AddLogApi(
-					(options, sp) =>
-					{
-						var config = sp.GetRequiredService<IConfiguration>();
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services
+                .AddLogApi(
+                    (options, sp) =>
+                    {
+                        var config = sp.GetRequiredService<IConfiguration>();
 
-						config.GetSection("LoggerServiceConfig").Bind(options);
+                        config.GetSection("LoggerServiceConfig").Bind(options);
 
-						options.NatsUrl = config.GetValue<string>("NatsSetting:Urls");
-					})
-				.AddDbTgsRepository(
-					(sp, dbBuilder) =>
-					{
-						var config = sp.GetRequiredService<IConfiguration>();
+                        options.NatsUrl = config.GetValue<string>("NatsSetting:Urls");
+                    })
+                .AddDbTgsRepository(
+                    (sp, dbBuilder) =>
+                    {
+                        var config = sp.GetRequiredService<IConfiguration>();
 
-						dbBuilder.UseLazyLoadingProxies();
+                        dbBuilder
+                            .UseLazyLoadingProxies()
+                            .EnableSensitiveDataLogging();
 
-						dbBuilder.UseNpgsql(
-							config.GetConnectionString("Tgs"),
-							serverOption =>
-							{
-								serverOption.SetPostgresVersion(12, 5);
-								serverOption.CommandTimeout(180);
-								serverOption.UseTrigrams();
-							});
+                        dbBuilder.UseNpgsql(
+                            config.GetConnectionString("Tgs"),
+                            serverOption =>
+                            {
+                                serverOption.SetPostgresVersion(12, 5);
+                                serverOption.CommandTimeout(180);
+                                serverOption.UseTrigrams();
+                            });
 
-						dbBuilder.UseSnakeCaseNamingConvention();
-					},
-					(options, sp) =>
-					{
-						var config = sp.GetRequiredService<IConfiguration>();
+                        dbBuilder.UseSnakeCaseNamingConvention();
+                    },
+                    (options, sp) =>
+                    {
+                        var config = sp.GetRequiredService<IConfiguration>();
 
-						config.GetSection("Notify").Bind(options);
-					});
+                        config.GetSection("Notify").Bind(options);
+                    });
 
-			services
-				.AddControllers(options =>
-				{
-					var policy = new AuthorizationPolicyBuilder()
-						.RequireAuthenticatedUser()
-						.Build();
-					options.Filters.Add(new AuthorizeFilter(policy));
-					options.Filters.Add(new HttpResponseExceptionFilter());
-				})
-				.ConfigureApiBehaviorOptions(options =>
-				{
-					options.InvalidModelStateResponseFactory = context =>
-					{
-						var result = new BadRequestObjectResult(context.ModelState);
+            services
+                .AddControllers(options =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                    options.Filters.Add(new AuthorizeFilter(policy));
+                    options.Filters.Add(new HttpResponseExceptionFilter());
+                })
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        var result = new BadRequestObjectResult(context.ModelState);
 
-						result.ContentTypes.Add(MediaTypeNames.Application.Json);
-						result.ContentTypes.Add(MediaTypeNames.Application.Xml);
+                        result.ContentTypes.Add(MediaTypeNames.Application.Json);
+                        result.ContentTypes.Add(MediaTypeNames.Application.Xml);
 
-						return result;
-					};
-				});
+                        return result;
+                    };
+                });
 
-			services
-				.AddHealthChecks()
-				.ForwardToPrometheus();
-		}
-	}
+            services
+                .AddHealthChecks()
+                .ForwardToPrometheus();
+        }
+    }
 }
