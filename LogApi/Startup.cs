@@ -51,8 +51,7 @@ namespace TGS.Apis.LogApi
                         var config = sp.GetRequiredService<IConfiguration>();
 
                         dbBuilder
-                            .UseLazyLoadingProxies()
-                            .EnableSensitiveDataLogging();
+                            .UseLazyLoadingProxies();
 
                         dbBuilder.UseNpgsql(
                             config.GetConnectionString("Tgs"),
