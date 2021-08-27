@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
-		<Version>0.0.8</Version>
+		<Version>0.0.9-alpha</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
@@ -17,7 +17,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Tgs.MessageQueue.Nats" Version="0.0.4" />
+		<PackageReference Include="Tgs.MessageQueue.Nats" Version="1.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
