@@ -14,8 +14,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Reactive" Version="5.0.0" />
-    <PackageReference Include="Tgs.MessageQueue" Version="0.0.2" />
-    <PackageReference Include="Tgs.MessageQueue.Nats" Version="0.0.4" />
+    <PackageReference Include="Tgs.MessageQueue" Version="1.0.1" />
+    <PackageReference Include="Tgs.MessageQueue.Nats" Version="1.0.1" />
     <PackageReference Include="TGS.Notify.Messages" Version="0.0.3" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.0.3" />
   </ItemGroup>
