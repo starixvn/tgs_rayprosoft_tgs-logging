@@ -49,7 +49,7 @@ namespace Tgs.LogApi
                         .Concat()
                         .Catch<Unit, Exception>(ex =>
                         {
-                            logger.LogError(ex, string.Empty);
+                            logger.LogError(ex, "Batch subscribe error !");
 
                             return Observable.Empty<Unit>();
                         }))
