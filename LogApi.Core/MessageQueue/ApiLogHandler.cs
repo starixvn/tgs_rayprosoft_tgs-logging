@@ -36,7 +36,7 @@ namespace Tgs.LogApi.MessageQueue
             _subject.Send(apiLog);
 
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation(JsonSerializer.Serialize(apiLog));
+                _logger.LogInformation(JsonSerializer.Serialize(apiLog));   
 
             return ValueTask.CompletedTask;
         }
