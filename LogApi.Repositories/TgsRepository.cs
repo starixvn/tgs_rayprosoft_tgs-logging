@@ -32,20 +32,20 @@ namespace Tgs.LogApi.Repositories
                 {
                     Id = Guid.NewGuid(),
                     Description = logEvent.Description ?? string.Empty,
-                    Exception = logEvent.Exception,
+                    Exception = logEvent.Exception ?? string.Empty,
                     ExecutionTimeMs = logEvent.ExecutionTimeMs,
-                    InnerException = logEvent.InnerException,
-                    Ip = logEvent.IpAddress,
-                    Method = logEvent.Method,
+                    InnerException = logEvent.InnerException ?? string.Empty,
+                    Ip = logEvent.IpAddress ?? string.Empty,
+                    Method = logEvent.Method ?? string.Empty,
                     Path = logEvent.Path,
                     RecordedOn = logEvent.RecordedOn.UtcDateTime,
-                    RequestContent = logEvent.RequestContent,
-                    RequestHeaders = logEvent.RequestHeaders,
+                    RequestContent = logEvent.RequestContent ?? string.Empty,
+                    RequestHeaders = logEvent.RequestHeaders ?? string.Empty,
                     ResponseCode = logEvent.ResponseCode,
                     ResponseContent = logEvent.ResponseContent ?? string.Empty,
-                    ResponseHeaders = logEvent.ResponseHeaders,
-                    ServerName = logEvent.ServerName,
-                    StackTrace = logEvent.StackTrace,
+                    ResponseHeaders = logEvent.ResponseHeaders ?? string.Empty,
+                    ServerName = logEvent.ServerName ?? string.Empty,
+                    StackTrace = logEvent.StackTrace ?? string.Empty,
                     TrackingId = logEvent.TrackingId
                 })
                 .ToArray();
@@ -84,17 +84,17 @@ namespace Tgs.LogApi.Repositories
                 {
                     Id = Guid.NewGuid(),
                     ExecutionTimeMs = logEvent.ExecutionTimeMs,
-                    Ip = logEvent.Ip,
-                    Method = logEvent.Method,
-                    Path = logEvent.Path,
-                    Prefix = logEvent.Prefix,
+                    Ip = logEvent.Ip ?? string.Empty,
+                    Method = logEvent.Method ?? string.Empty,
+                    Path = logEvent.Path ?? string.Empty,
+                    Prefix = logEvent.Prefix ?? string.Empty,
                     RecordedOn = logEvent.RecordedOn.UtcDateTime,
-                    RequestContent = logEvent.RequestContent,
-                    RequestHeaders = logEvent.RequestHeaders,
+                    RequestContent = logEvent.RequestContent ?? string.Empty,
+                    RequestHeaders = logEvent.RequestHeaders ?? string.Empty,
                     ResponseCode = logEvent.ResponseCode,
-                    ResponseContent = logEvent.ResponseContent,
-                    ResponseHeaders = logEvent.ResponseHeaders,
-                    ServerName = logEvent.ServerName,
+                    ResponseContent = logEvent.ResponseContent ?? string.Empty,
+                    ResponseHeaders = logEvent.ResponseHeaders ?? string.Empty,
+                    ServerName = logEvent.ServerName ?? string.Empty,
                     TrackingId = logEvent.TrackingId
                 })
                 .ToArray();
@@ -134,10 +134,10 @@ namespace Tgs.LogApi.Repositories
                     Id = Guid.NewGuid(),
                     Exception = log.Exception ?? string.Empty,
                     Level = (int)log.Level,
-                    Logger = log.Logger,
-                    Message = log.Message,
+                    Logger = log.Logger ?? string.Empty,
+                    Message = log.Message ?? string.Empty,
                     RecordedOn = log.RecordedOn.UtcDateTime,
-                    ServerName = log.ServerName,
+                    ServerName = log.ServerName ?? string.Empty,
                     TrackingId = log.TrackingId
                 })
                 .ToArray();

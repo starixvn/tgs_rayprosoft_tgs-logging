@@ -35,6 +35,9 @@ namespace Tgs.LogApi
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation($"LogLevel Options: {_options.LogLevel}");
+            _logger.LogInformation($"UnrestrictedLoggers: {string.Join(", ", _options.UnrestrictedLoggers)}");
+
             _batchSubscription = _logRecordSubject
                 .Where(log => log.Level >= _options.LogLevel
                     || _options.UnrestrictedLoggers.Contains(log.Logger))

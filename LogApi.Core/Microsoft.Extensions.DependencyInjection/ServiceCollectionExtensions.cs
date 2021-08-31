@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Tgs.LogApi;
 using Tgs.LogApi.Configuration;
 using Tgs.LogApi.MessageQueue;
+using Tgs.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -34,9 +35,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
 							options.Url = logApiOptions.NatsUrl;
 						})
-						.AddHandler<ApiLogHandler>("ApiLogEvent", "TgsLogQueue")
-						.AddHandler<AdminLogHandler>("AdminLogEvent", "TgsLogQueue")
-						.AddHandler<LogRecordHandler>("LogRecordEvent", "TgsLogQueue");
+                        .AddHandler<ApiLogHandler>("ApiLogEvent", "ApiLogEvent")
+						.AddHandler<AdminLogHandler>("AdminLogEvent", "AdminLogEvent")
+						.AddHandler<LogRecordHandler>("LogRecordEvent", "LogRecordEvent");
 				}));
 	}
 }
