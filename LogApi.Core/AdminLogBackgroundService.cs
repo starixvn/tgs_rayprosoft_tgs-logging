@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +13,10 @@ namespace Tgs.LogApi
     internal class AdminLogBackgroundService : BackgroundService
     {
         private readonly AdminLogSubject _adminLogSubject;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<AdminLogBackgroundService> _logger;
         private readonly LogApiOptions _options;
+        private readonly IServiceProvider _serviceProvider;
+        private IDisposable _batchSubscription = default!;
 
         public AdminLogBackgroundService(
             AdminLogSubject adminLogSubject,
@@ -34,7 +34,7 @@ namespace Tgs.LogApi
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var batchSub = _adminLogSubject
+            _batchSubscription = _adminLogSubject
                 .BatchSubscribe(
                     _options.BatchInsertCounts,
                     async logs =>
@@ -48,7 +48,7 @@ namespace Tgs.LogApi
                     },
                     _logger);
 
-            stoppingToken.Register(() => batchSub.Dispose());
+            stoppingToken.Register(() => _batchSubscription.Dispose());
 
             return Task.CompletedTask;
         }

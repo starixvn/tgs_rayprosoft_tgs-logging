@@ -13,9 +13,10 @@ namespace Tgs.LogApi
     internal class ApiLogBackgroundService : BackgroundService
     {
         private readonly ApiLogSubject _apiLogSubject;
+        private readonly ILogger<ApiLogBackgroundService> _logger;
         private readonly LogApiOptions _options;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ApiLogBackgroundService> _logger;
+        private IDisposable _batchSubscription = default!;
 
         public ApiLogBackgroundService(
             ApiLogSubject apiLogSubject,
@@ -32,7 +33,7 @@ namespace Tgs.LogApi
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var batchSub = _apiLogSubject.BatchSubscribe(
+            _batchSubscription = _apiLogSubject.BatchSubscribe(
                 _options.BatchInsertCounts,
                 async logs =>
                 {
@@ -45,7 +46,7 @@ namespace Tgs.LogApi
                 },
                 _logger);
 
-            stoppingToken.Register(() => batchSub.Dispose());
+            stoppingToken.Register(() => _batchSubscription.Dispose());
 
             return Task.CompletedTask;
         }
