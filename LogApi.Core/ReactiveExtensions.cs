@@ -53,6 +53,7 @@ namespace Tgs.LogApi
 
                             return Observable.Empty<Unit>();
                         }))
+                .Finally(() => logger.LogWarning("Batch process end."))
                 .Subscribe();
         }
     }

@@ -18,6 +18,7 @@ namespace Tgs.LogApi
         private readonly LogRecordSubject _logRecordSubject;
         private readonly LogApiOptions _options;
         private readonly IServiceProvider _serviceProvider;
+        private IDisposable _batchSubscription = default!;
 
         public LogRecordBackgroundService(
             LogRecordSubject logRecordSubject,
@@ -34,7 +35,7 @@ namespace Tgs.LogApi
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var batchSub = _logRecordSubject
+            _batchSubscription = _logRecordSubject
                 .Where(log => log.Level >= _options.LogLevel
                     || _options.UnrestrictedLoggers.Contains(log.Logger))
                 .BatchSubscribe(
@@ -50,7 +51,7 @@ namespace Tgs.LogApi
                     },
                     _logger);
 
-            stoppingToken.Register(() => batchSub.Dispose());
+            stoppingToken.Register(() => _batchSubscription.Dispose());
 
             return Task.CompletedTask;
         }
