@@ -38,7 +38,10 @@ namespace LogApi.IntegrationTests
             var fakeMessageSender = Substitute.For<IMessageSender>();
 
             fakeMessageSender
-                .PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>(), Arg.Any<IEnumerable<MessageHeaderValue>>())
+                .PublishAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<byte[]>(),
+                    Arg.Any<IEnumerable<MessageHeaderValue>>())
                 .Returns(callInfo =>
                 {
                     var data = callInfo.Arg<byte[]>();
@@ -93,7 +96,10 @@ namespace LogApi.IntegrationTests
             var fakeMessageSender = Substitute.For<IMessageSender>();
 
             fakeMessageSender
-                .PublishAsync(Arg.Any<string>(), Arg.Any<byte[]>(), Arg.Any<IEnumerable<MessageHeaderValue>>())
+                .PublishAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<byte[]>(),
+                    Arg.Any<IEnumerable<MessageHeaderValue>>())
                 .Returns(callInfo =>
                 {
                     var data = callInfo.Arg<byte[]>();
