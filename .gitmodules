@@ -1,0 +1,3 @@
+[submodule "deployment"]
+	path = deployment
+	url = git@gitlab.com:rayprosoft/deployment.git

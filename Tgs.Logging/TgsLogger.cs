@@ -22,8 +22,8 @@ namespace Tgs.Logging
 			LogLevel logLevel,
 			EventId eventId,
 			TState state,
-			Exception exception,
-			Func<TState, Exception, string> formatter)
+			Exception? exception,
+			Func<TState, Exception?, string> formatter)
 		{
 			if (!IsEnabled(logLevel))
 				return;
@@ -44,7 +44,7 @@ namespace Tgs.Logging
 				},
 				Logger = _categoryName,
 				Message = formatter?.Invoke(state, exception)!,
-				Exception = exception?.ToString()
+				Exception = exception?.ToString() ?? string.Empty
 			};
 
 			_tgsLogBackgroundProcessor.AddRecord(record);
