@@ -22,7 +22,7 @@ namespace Tgs.LogApi.MessageQueue
             ILogger<ApiLogHandler> logger)
         {
             if (optionsAccessor is null) throw new ArgumentNullException(nameof(optionsAccessor));
-            _subject = subject ?? throw new System.ArgumentNullException(nameof(subject));
+            _subject = subject ?? throw new ArgumentNullException(nameof(subject));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = optionsAccessor.Value;
         }
