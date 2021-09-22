@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Tgs.Logging;
 
-namespace Tgs.Logging.Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
