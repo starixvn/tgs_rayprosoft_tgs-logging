@@ -119,7 +119,7 @@ pipeline {
                             --set connectionStrings.tgs="$tgs_tgs" \
                             --set connectionStrings.redis="$tgs_redis" \
                             --set nats.urls="$tgs_nats" \
-                            --set autoscaling=${autoscaling} \
+                            --set autoscaling.enabled=${autoscaling} \
                             --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                             --set notifyPath="$tgs_notifyPath"
 
@@ -129,7 +129,7 @@ pipeline {
                             --set connectionStrings.tgs="$tgs_tgs" \
                             --set connectionStrings.redis="$tgs_redis" \
                             --set nats.urls="$tgs_nats" \
-                            --set autoscaling=${autoscaling} \
+                            --set autoscaling.enabled=${autoscaling} \
                             --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                             --set notifyPath="$tgs_notifyPath" \
                         | kubectl -n ${kube_ns} apply -f -
