@@ -19,14 +19,17 @@ pipeline {
                         case ['main', 'origin/main']:
                             env.kube_ns = "prod";
                             env.k8s_config = 'stag-k8s-config';
+                            env.autoscaling = 'true';
                             break;
                         case ['release', 'origin/release']:
                             env.kube_ns = "staging";
                             env.k8s_config = 'stag-k8s-config';
+                            env.autoscaling = 'false';
                             break;
                         default:
                             env.kube_ns = "dev";
-                            env.k8s_config='k8s-kube-config' 
+                            env.k8s_config='k8s-kube-config'
+                            env.autoscaling = 'false';
                             break;
                     }
                 }
@@ -116,6 +119,7 @@ pipeline {
                             --set connectionStrings.tgs="$tgs_tgs" \
                             --set connectionStrings.redis="$tgs_redis" \
                             --set nats.urls="$tgs_nats" \
+                            --set autoscaling.enabled=${autoscaling} \
                             --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                             --set notifyPath="$tgs_notifyPath"
 
@@ -125,6 +129,7 @@ pipeline {
                             --set connectionStrings.tgs="$tgs_tgs" \
                             --set connectionStrings.redis="$tgs_redis" \
                             --set nats.urls="$tgs_nats" \
+                            --set autoscaling.enabled=${autoscaling} \
                             --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                             --set notifyPath="$tgs_notifyPath" \
                         | kubectl -n ${kube_ns} apply -f -
