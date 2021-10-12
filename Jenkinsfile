@@ -112,28 +112,30 @@ pipeline {
         stage('Deploy log-api') { 
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
-                    sh '''
-                        helm template deployment/k8s/log-api \
-                            --set image.tag=${TAG} \
-                            --set namespace=${kube_ns} \
-                            --set connectionStrings.tgs="$tgs_tgs" \
-                            --set connectionStrings.redis="$tgs_redis" \
-                            --set nats.urls="$tgs_nats" \
-                            --set autoscaling.enabled=${autoscaling} \
-                            --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                            --set notifyPath="$tgs_notifyPath"
+                    withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
+                        sh '''
+                            helm template deployment/k8s/log-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set connectionStrings.tgs="$tgs_tgs" \
+                                --set connectionStrings.redis="$tgs_redis" \
+                                --set nats.urls="$tgs_nats" \
+                                --set autoscaling.enabled=${autoscaling} \
+                                --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
+                                --set notifyPath="$tgs_notifyPath"
 
-                        helm template deployment/k8s/log-api \
-                            --set image.tag=${TAG} \
-                            --set namespace=${kube_ns} \
-                            --set connectionStrings.tgs="$tgs_tgs" \
-                            --set connectionStrings.redis="$tgs_redis" \
-                            --set nats.urls="$tgs_nats" \
-                            --set autoscaling.enabled=${autoscaling} \
-                            --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                            --set notifyPath="$tgs_notifyPath" \
-                        | kubectl -n ${kube_ns} apply -f -
-                    '''
+                            helm template deployment/k8s/log-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set connectionStrings.tgs="$tgs_tgs" \
+                                --set connectionStrings.redis="$tgs_redis" \
+                                --set nats.urls="$tgs_nats" \
+                                --set autoscaling.enabled=${autoscaling} \
+                                --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
+                                --set notifyPath="$tgs_notifyPath" \
+                            | kubectl -n ${kube_ns} apply -f -
+                        '''
+                    }
                 }
             }
         }
