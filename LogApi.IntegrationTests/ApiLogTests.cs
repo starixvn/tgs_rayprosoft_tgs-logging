@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.LogApi;
@@ -72,7 +73,8 @@ namespace LogApi.IntegrationTests
 			var sut = new TgsLog(
 				apiLogProcessor,
 				adminLogProcessor,
-				logRecordProcessor);
+				logRecordProcessor,
+                NullLogger<TgsLog>.Instance);
 
 			sut.LogApi(new ApiLogEvent());
 
