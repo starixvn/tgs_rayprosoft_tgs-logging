@@ -16,18 +16,21 @@ namespace Tgs.LogApi
     {
         private readonly ILogger<LogRecordBackgroundService> _logger;
         private readonly LogRecordSubject _logRecordSubject;
+        private readonly TaskSubject _taskSubject;
         private readonly LogApiOptions _options;
         private readonly IServiceProvider _serviceProvider;
         private IDisposable _batchSubscription = default!;
 
         public LogRecordBackgroundService(
             LogRecordSubject logRecordSubject,
+            TaskSubject taskSubject,
             IServiceProvider serviceProvider,
             IOptions<LogApiOptions> optionsAccessor,
             ILogger<LogRecordBackgroundService> logger)
         {
             if (optionsAccessor is null) throw new ArgumentNullException(nameof(optionsAccessor));
             _logRecordSubject = logRecordSubject ?? throw new ArgumentNullException(nameof(logRecordSubject));
+            _taskSubject = taskSubject ?? throw new ArgumentNullException(nameof(taskSubject));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = optionsAccessor.Value;
@@ -52,7 +55,8 @@ namespace Tgs.LogApi
                             .ExecuteAsync(new SaveLogRecordBatchCommand(logs))
                             .ConfigureAwait(false);
                     },
-                    _logger);
+                    _logger)
+                .Subscribe(_taskSubject);
 
             stoppingToken.Register(() => _batchSubscription.Dispose());
 
