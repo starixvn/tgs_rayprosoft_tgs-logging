@@ -21,18 +21,17 @@ namespace LogApi.IntegrationTests
             var tcs = new TaskCompletionSource();
             var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-            using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
+            using var testWebApp = new TestLogApiApplication(builder =>
             {
-                services
-                    .AddSingleton(sp => ActivatorUtilities.CreateInstance<AdminLogHandler>(sp))
-                    .AddSingleton(fakeTgsRepository);
+                builder.ConfigureServices(services =>
+                {
+                    services
+                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<AdminLogHandler>(sp))
+                        .AddSingleton(fakeTgsRepository);
+                });
             });
 
-            _ = testHost.StartAsync();
-
-            await Task.Delay(1000);
-
-            var handler = testHost.Services.GetRequiredService<AdminLogHandler>();
+            var handler = testWebApp.Services.GetRequiredService<AdminLogHandler>();
 
             var fakeMessageSender = Substitute.For<IMessageSender>();
 
