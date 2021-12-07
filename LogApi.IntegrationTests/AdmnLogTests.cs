@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.LogApi;
 using Tgs.LogApi.MessageQueue;
+using Tgs.LogApi.Repositories.Entities;
 using Tgs.Logging;
 using Tgs.MessageQueue;
 
@@ -27,7 +30,23 @@ namespace LogApi.IntegrationTests
                 {
                     services
                         .AddSingleton(sp => ActivatorUtilities.CreateInstance<AdminLogHandler>(sp))
-                        .AddSingleton(fakeTgsRepository);
+                        .AddSingleton(fakeTgsRepository)
+                        .Configure<LogApiOptions>(options =>
+                        {
+                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                            options.UnrestrictedLoggers = Array.Empty<string>();
+                        })
+                        .AddFakeNatsMessageQueue()
+                        .AddSingleton<TgsContext>(sp =>
+                        {
+                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                            dbContextOptionsBuilder
+                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                                .ConfigureWarnings(x => x.Ignore(
+                                    InMemoryEventId.TransactionIgnoredWarning));
+
+                            return new TgsContext(dbContextOptionsBuilder.Options);
+                        });
                 });
             });
 
