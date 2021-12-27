@@ -15,7 +15,6 @@ using Tgs.MessageQueue;
 
 namespace LogApi.IntegrationTests
 {
-    [TestFixture]
     public class AdmnLogTests
     {
         [Test]
