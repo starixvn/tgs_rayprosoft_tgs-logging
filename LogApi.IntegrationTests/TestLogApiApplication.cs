@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using TGS.Apis.LogApi;
 
 namespace LogApi.IntegrationTests
 {
-    internal class TestLogApiApplication : WebApplicationFactory<Startup>
+    internal class TestLogApiApplication : WebApplicationFactory<Program>
     {
         private readonly Action<IWebHostBuilder>? _webHostConfigure;
 

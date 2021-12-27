@@ -50,8 +50,6 @@ namespace LogApi.IntegrationTests
                 });
             });
 
-            await Task.Delay(1000);
-
             var handler = testWebApp.Services.GetRequiredService<ApiLogHandler>();
 
             var fakeMessageSender = Substitute.For<IMessageSender>();

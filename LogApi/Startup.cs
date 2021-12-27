@@ -1,13 +1,8 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Prometheus;
 using TGS.Apis.LogApi.Filters;
 
@@ -15,24 +10,6 @@ namespace TGS.Apis.LogApi
 {
     public class Startup
     {
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
-        {
-            app.UseRouting();
-
-            app.UseHttpMetrics();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-
-                endpoints.MapHealthChecks("/health");
-
-                endpoints.MapMetrics();
-            });
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -50,19 +27,12 @@ namespace TGS.Apis.LogApi
                     {
                         var config = sp.GetRequiredService<IConfiguration>();
 
-                        dbBuilder
-                            .UseLazyLoadingProxies();
-
                         dbBuilder.UseNpgsql(
                             config.GetConnectionString("Tgs"),
                             serverOption =>
                             {
-                                serverOption.SetPostgresVersion(12, 5);
                                 serverOption.CommandTimeout(180);
-                                serverOption.UseTrigrams();
                             });
-
-                        dbBuilder.UseSnakeCaseNamingConvention();
                     },
                     (options, sp) =>
                     {

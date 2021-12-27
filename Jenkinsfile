@@ -3,9 +3,8 @@ pipeline {
     agent any
     
     environment {
-        ImageName = "registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api"
+        ImageName = "harbor.rpgp.cc/tgs/log-api"
         BuildConfiguration = 'Debug'
-        ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2154485/tags"
     }
 
     stages {
@@ -77,7 +76,7 @@ pipeline {
 
             steps {
                 sh 'dotnet pack -c $BuildConfiguration "Tgs.Logging/Tgs.Logging.csproj" --no-restore'
-                sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" --source "raypro" --skip-duplicate'
+                sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" -s "raypro-baget" -k admin --skip-duplicate'
             }
         }
 
@@ -150,14 +149,6 @@ pipeline {
                 sshagent(['ssh-jenkins']) {
                     sh "git tag -a ${TAG} -m ${TAG}"
                     sh "git push ${GIT_URL} ${TAG} HEAD:${GIT_BRANCH}"
-                }
-            }
-        }
-
-        stage('Remove Image Tags') {					
-            steps {	
-                withCredentials([string(credentialsId: "GitLabToken", variable: "GitLabToken")]) {
-                    sh "curl --request DELETE --data \'name_regex_delete=.*\' --data \'keep_n=10\' --header \'PRIVATE-TOKEN: ${GitLabToken}\' ${ImageTagUrl}"
                 }
             }
         }

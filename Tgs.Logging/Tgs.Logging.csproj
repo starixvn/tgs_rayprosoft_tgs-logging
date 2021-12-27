@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0;</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.12</Version>
+		<Version>0.0.13</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 		<LangVersion>10.0</LangVersion>
@@ -13,16 +13,16 @@
 		<PackageReference Include="MessagePack" Version="2.3.85" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'"/>
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'"/>
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="PhoenixToolkits.NuGet.BuildTools" Version="0.0.1" />
-		<PackageReference Include="Tgs.MessageQueue.Nats" Version="1.0.1" />
+		<PackageReference Include="Tgs.MessageQueue.Nats" Version="1.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,7 +36,7 @@
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-logging</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-logging.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Logging</PackageTags>
+		<PackageTags>Tgs Logging</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 </Project>

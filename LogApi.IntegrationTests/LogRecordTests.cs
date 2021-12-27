@@ -52,8 +52,6 @@ namespace LogApi.IntegrationTests
                 });
             });
 
-            await Task.Delay(1000);
-
             var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
 
             var fakeMessageSender = Substitute.For<IMessageSender>();
@@ -126,8 +124,6 @@ namespace LogApi.IntegrationTests
                         });
                 });
             });
-
-            await Task.Delay(1000);
 
             var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
 
