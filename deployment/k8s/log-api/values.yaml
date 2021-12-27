@@ -11,7 +11,7 @@ image:
   tag: "dev"
 
 imagePullSecrets:
-  - name: registry-credentials
+  - name: secret-tgs-harbor
 nameOverride: "log-api"
 fullnameOverride: "log-api"
 namespace: dev
