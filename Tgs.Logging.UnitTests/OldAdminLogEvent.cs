@@ -8,7 +8,7 @@ using MessagePack;
 namespace Tgs.Logging.UnitTests
 {
 	[MessagePackObject(true)]
-	public class AdminLogEvent
+	public class OldAdminLogEvent
 	{
 		public Guid trackingid { get; set; }
 		public string path { get; set; }
