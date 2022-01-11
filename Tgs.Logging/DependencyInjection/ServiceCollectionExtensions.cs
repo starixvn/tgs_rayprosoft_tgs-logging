@@ -10,15 +10,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.TryAddSingleton(
                 sp => new TgsLogBackgroundProcessor<LogRecordEvent>(
-                "LogRecordEvent",
+                "tgs.log.log-record",
                 sp.GetRequiredService<IMessageSender>()));
             services.AddSingleton(
                 sp => new TgsLogBackgroundProcessor<AdminLogEvent>(
-                "AdminLogEvent",
+                "tgs.log.admin",
                 sp.GetRequiredService<IMessageSender>()));
             services.AddSingleton(
                 sp => new TgsLogBackgroundProcessor<ApiLogEvent>(
-                "ApiLogEvent",
+                "tgs.log.apilog",
                 sp.GetRequiredService<IMessageSender>()));
             services.TryAddTransient<ITgsLog, TgsLog>();
 
