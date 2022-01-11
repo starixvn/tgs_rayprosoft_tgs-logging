@@ -116,7 +116,6 @@ pipeline {
                             helm template deployment/k8s/log-api \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
                                 --set connectionStrings.redis="$tgs_redis" \
                                 --set nats.urls="$tgs_nats" \
                                 --set autoscaling.enabled=${autoscaling} \
@@ -126,7 +125,6 @@ pipeline {
                             helm template deployment/k8s/log-api \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
                                 --set connectionStrings.redis="$tgs_redis" \
                                 --set nats.urls="$tgs_nats" \
                                 --set autoscaling.enabled=${autoscaling} \
