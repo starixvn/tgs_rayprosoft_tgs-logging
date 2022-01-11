@@ -18,7 +18,6 @@ data:
         "Path": "{{ .Values.notifyPath }}"
       },
       "ConnectionStrings": {
-        "Tgs": "{{ .Values.connectionStrings.tgs }}",
         "RedisConfigurationString": "{{ .Values.connectionStrings.redis }}"
       },
       "NatsSetting": {
