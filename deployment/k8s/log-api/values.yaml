@@ -5,13 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api
-  pullPolicy: Always
+  repository: harbor.rpgp.cc/tgs/log-api
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "dev"
 
 imagePullSecrets:
-  - name: registry-credentials
+  - name: secret-tgs-harbor
 nameOverride: "log-api"
 fullnameOverride: "log-api"
 namespace: dev
@@ -51,11 +51,11 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: 750m
-    memory: 756Mi
+    cpu: 400m
+    memory: 1Gi
   requests:
-    cpu: 200m
-    memory: 200Mi
+    cpu: 400m
+    memory: 1Gi
 
 autoscaling:
   enabled: false

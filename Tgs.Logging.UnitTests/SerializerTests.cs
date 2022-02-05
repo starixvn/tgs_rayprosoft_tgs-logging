@@ -13,7 +13,7 @@ namespace Tgs.Logging.UnitTests
 			var serializerOptions = MessagePackSerializerOptions.Standard.WithCompression(
 				MessagePackCompression.Lz4BlockArray);
 
-			var data = new AdminLogEvent
+			var data = new OldAdminLogEvent
 			{
 				trackingid = Guid.NewGuid(),
 				description = "test",
@@ -40,7 +40,7 @@ namespace Tgs.Logging.UnitTests
 
 			var bytes2 = MessagePackSerializer.Serialize(transObj, serializerOptions);
 
-			var actual = MessagePackSerializer.Deserialize<AdminLogEvent>(bytes, serializerOptions);
+			var actual = MessagePackSerializer.Deserialize<OldAdminLogEvent>(bytes2, serializerOptions);
 
 			data.ToExpectedObject().ShouldMatch(actual);
 		}

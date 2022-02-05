@@ -1,37 +1,29 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Prometheus.DotNetRuntime;
+using TGS.Apis.LogApi;
 
-namespace TGS.Apis.LogApi
-{
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            DotNetRuntimeStatsBuilder
-               .Customize()
-               .WithContentionStats(sampleRate: SampleEvery.FiveEvents)
-               .WithJitStats(sampleRate: SampleEvery.TenEvents)
-               .WithGcStats()
-               .WithExceptionStats()
-               .StartCollecting();
+using var collector = DotNetRuntimeStatsBuilder
+    .Customize()
+    .WithContentionStats(sampleRate: SampleEvery.FiveEvents)
+    .WithJitStats(sampleRate: SampleEvery.TenEvents)
+    .WithGcStats()
+    .WithExceptionStats()
+    .StartCollecting();
 
-            var host = CreateHostBuilder(args).Build();
+var builder = WebApplication.CreateBuilder(args);
 
-            await host.RunAsync();
-        }
+builder.Configuration.AddJsonFile("/config/appsettings.json", true);
 
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((ctx, builder) =>
-                {
-                    builder.AddJsonFile("/config/appsettings.json", true);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+var startup = new Startup();
+
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+
+app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapMetrics();
+
+await app.RunAsync();

@@ -11,7 +11,7 @@ namespace Tgs.LogApi
 {
     internal static class ReactiveExtensions
     {
-        public static IDisposable BatchSubscribe<TUnit>(
+        public static IObservable<Func<Task>> BatchSubscribe<TUnit>(
             this IObservable<TUnit> observable,
             int batchSize,
             Func<TUnit[], Task> handle,
@@ -32,29 +32,24 @@ namespace Tgs.LogApi
                 .Using(
                     () => observable.Subscribe(batch.AsObserver()),
                     res => batch.AsObservable()
-                        .Select(unit => Observable.FromAsync(async () =>
+                        .Select(unit =>
                         {
-                            try
+                            Func<Task> callback = async () =>
                             {
-                                await handle(unit);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.LogError(ex, string.Empty);
-                            }
+                                try
+                                {
+                                    await handle(unit);
+                                }
+                                finally
+                                {
+                                    if (batch.OutputCount == 0)
+                                        batch.TriggerBatch();
+                                }
+                            };
 
-                            if (batch.OutputCount == 0)
-                                batch.TriggerBatch();
+                            return callback;
                         }))
-                        .Concat()
-                        .Catch<Unit, Exception>(ex =>
-                        {
-                            logger.LogError(ex, "Batch subscribe error !");
-
-                            return Observable.Empty<Unit>();
-                        }))
-                .Finally(() => logger.LogWarning("Batch process end."))
-                .Subscribe();
+                .Finally(() => logger.LogWarning("Batch process end."));
         }
     }
 }

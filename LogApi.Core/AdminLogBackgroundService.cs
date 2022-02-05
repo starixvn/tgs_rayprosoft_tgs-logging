@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,13 +7,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Tgs.LogApi.ApplicationServices;
-using TGS.ServiceUtility;
+using Tgs.ServiceUtility;
 
 namespace Tgs.LogApi
 {
     internal class AdminLogBackgroundService : BackgroundService
     {
         private readonly AdminLogSubject _adminLogSubject;
+        private readonly TaskSubject _taskSubject;
         private readonly ILogger<AdminLogBackgroundService> _logger;
         private readonly LogApiOptions _options;
         private readonly IServiceProvider _serviceProvider;
@@ -20,6 +22,7 @@ namespace Tgs.LogApi
 
         public AdminLogBackgroundService(
             AdminLogSubject adminLogSubject,
+            TaskSubject taskSubject,
             IServiceProvider serviceProvider,
             IOptions<LogApiOptions> optionsAccessor,
             ILogger<AdminLogBackgroundService> logger)
@@ -27,6 +30,7 @@ namespace Tgs.LogApi
             if (optionsAccessor is null) throw new ArgumentNullException(nameof(optionsAccessor));
 
             _adminLogSubject = adminLogSubject ?? throw new ArgumentNullException(nameof(adminLogSubject));
+            _taskSubject = taskSubject ?? throw new ArgumentNullException(nameof(taskSubject));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = optionsAccessor.Value;
@@ -46,7 +50,12 @@ namespace Tgs.LogApi
                             .ExecuteAsync(new SaveAdminLogBatchCommand(logs))
                             .ConfigureAwait(false);
                     },
-                    _logger);
+                    _logger)
+                .Select(callback =>
+                {
+                    return callback;
+                })
+                .Subscribe(_taskSubject);
 
             stoppingToken.Register(() => _batchSubscription.Dispose());
 

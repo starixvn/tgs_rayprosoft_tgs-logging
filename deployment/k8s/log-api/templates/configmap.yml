@@ -8,14 +8,16 @@ data:
     {
       "Logging": {
         "LogLevel": {
-          "System.Net.Http.HttpClient": "Warning"
+          "System.Net.Http.HttpClient": "Warning",
+          "Tgs.LogApi.MessageQueue.AdminLogHandler": "Warning",
+          "Tgs.LogApi.MessageQueue.ApiLogHandler": "Information",
+          "Tgs.LogApi.MessageQueue.LogRecordHandler": "Warning"
         }
       },
       "Notify": {
         "Path": "{{ .Values.notifyPath }}"
       },
       "ConnectionStrings": {
-        "Tgs": "{{ .Values.connectionStrings.tgs }}",
         "RedisConfigurationString": "{{ .Values.connectionStrings.redis }}"
       },
       "NatsSetting": {

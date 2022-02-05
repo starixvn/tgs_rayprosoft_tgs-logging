@@ -3,9 +3,8 @@ pipeline {
     agent any
     
     environment {
-        ImageName = "registry.gitlab.com/rayprosoft/turnkey-gaming-system/log-api"
+        ImageName = "harbor.rpgp.cc/tgs/log-api"
         BuildConfiguration = 'Debug'
-        ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2154485/tags"
     }
 
     stages {
@@ -19,14 +18,17 @@ pipeline {
                         case ['main', 'origin/main']:
                             env.kube_ns = "prod";
                             env.k8s_config = 'stag-k8s-config';
+                            env.autoscaling = 'true';
                             break;
                         case ['release', 'origin/release']:
                             env.kube_ns = "staging";
                             env.k8s_config = 'stag-k8s-config';
+                            env.autoscaling = 'false';
                             break;
                         default:
                             env.kube_ns = "dev";
-                            env.k8s_config='k8s-kube-config' 
+                            env.k8s_config='k8s-kube-config'
+                            env.autoscaling = 'false';
                             break;
                     }
                 }
@@ -74,7 +76,7 @@ pipeline {
 
             steps {
                 sh 'dotnet pack -c $BuildConfiguration "Tgs.Logging/Tgs.Logging.csproj" --no-restore'
-                sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" --source "raypro" --skip-duplicate'
+                sh 'dotnet nuget push "Tgs.Logging/bin/$BuildConfiguration/*.nupkg" -s "raypro-baget" -k admin --skip-duplicate'
             }
         }
 
@@ -109,26 +111,28 @@ pipeline {
         stage('Deploy log-api') { 
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
-                    sh '''
-                        helm template deployment/k8s/log-api \
-                            --set image.tag=${TAG} \
-                            --set namespace=${kube_ns} \
-                            --set connectionStrings.tgs="$tgs_tgs" \
-                            --set connectionStrings.redis="$tgs_redis" \
-                            --set nats.urls="$tgs_nats" \
-                            --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                            --set notifyPath="$tgs_notifyPath"
+                    withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
+                        sh '''
+                            helm template deployment/k8s/log-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set connectionStrings.redis="$tgs_redis" \
+                                --set nats.urls="$tgs_nats" \
+                                --set autoscaling.enabled=${autoscaling} \
+                                --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
+                                --set notifyPath="$tgs_notifyPath"
 
-                        helm template deployment/k8s/log-api \
-                            --set image.tag=${TAG} \
-                            --set namespace=${kube_ns} \
-                            --set connectionStrings.tgs="$tgs_tgs" \
-                            --set connectionStrings.redis="$tgs_redis" \
-                            --set nats.urls="$tgs_nats" \
-                            --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                            --set notifyPath="$tgs_notifyPath" \
-                        | kubectl -n ${kube_ns} apply -f -
-                    '''
+                            helm template deployment/k8s/log-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set connectionStrings.redis="$tgs_redis" \
+                                --set nats.urls="$tgs_nats" \
+                                --set autoscaling.enabled=${autoscaling} \
+                                --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
+                                --set notifyPath="$tgs_notifyPath" \
+                            | kubectl -n ${kube_ns} apply -f -
+                        '''
+                    }
                 }
             }
         }
@@ -143,14 +147,6 @@ pipeline {
                 sshagent(['ssh-jenkins']) {
                     sh "git tag -a ${TAG} -m ${TAG}"
                     sh "git push ${GIT_URL} ${TAG} HEAD:${GIT_BRANCH}"
-                }
-            }
-        }
-
-        stage('Remove Image Tags') {					
-            steps {	
-                withCredentials([string(credentialsId: "GitLabToken", variable: "GitLabToken")]) {
-                    sh "curl --request DELETE --data \'name_regex_delete=.*\' --data \'keep_n=10\' --header \'PRIVATE-TOKEN: ${GitLabToken}\' ${ImageTagUrl}"
                 }
             }
         }

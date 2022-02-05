@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.LogApi;
 using Tgs.LogApi.MessageQueue;
+using Tgs.LogApi.Repositories.Entities;
 using Tgs.Logging;
 using Tgs.MessageQueue;
 
@@ -22,18 +26,33 @@ namespace LogApi.IntegrationTests
             var tcs = new TaskCompletionSource();
             var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-            using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
+            using var testWebApp = new TestLogApiApplication(builder =>
             {
-                services
-                    .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-                    .AddSingleton(fakeTgsRepository);
+                builder.ConfigureServices(services =>
+                {
+                    services
+                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                        .AddSingleton(fakeTgsRepository)
+                        .Configure<LogApiOptions>(options =>
+                        {
+                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                            options.UnrestrictedLoggers = Array.Empty<string>();
+                        })
+                        .AddFakeNatsMessageQueue()
+                        .AddSingleton(sp =>
+                        {
+                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                            dbContextOptionsBuilder
+                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                                .ConfigureWarnings(x => x.Ignore(
+                                    InMemoryEventId.TransactionIgnoredWarning));
+
+                            return new TgsContext(dbContextOptionsBuilder.Options);
+                        });
+                });
             });
 
-            _ = testHost.StartAsync();
-
-            await Task.Delay(1000);
-
-            var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
+            var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
 
             var fakeMessageSender = Substitute.For<IMessageSender>();
 
@@ -80,18 +99,33 @@ namespace LogApi.IntegrationTests
             var tcs = new TaskCompletionSource();
             var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-            using var testHost = TestSiteHelper.GetLogApiTestHost(services =>
+            using var testWebApp = new TestLogApiApplication(builder =>
             {
-                services
-                    .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-                    .AddSingleton(fakeTgsRepository);
+                builder.ConfigureServices(services =>
+                {
+                    services
+                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                        .AddSingleton(fakeTgsRepository)
+                        .Configure<LogApiOptions>(options =>
+                        {
+                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                            options.UnrestrictedLoggers = Array.Empty<string>();
+                        })
+                        .AddFakeNatsMessageQueue()
+                        .AddSingleton(sp =>
+                        {
+                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                            dbContextOptionsBuilder
+                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                                .ConfigureWarnings(x => x.Ignore(
+                                    InMemoryEventId.TransactionIgnoredWarning));
+
+                            return new TgsContext(dbContextOptionsBuilder.Options);
+                        });
+                });
             });
 
-            _ = testHost.StartAsync();
-
-            await Task.Delay(1000);
-
-            var handler = testHost.Services.GetRequiredService<LogRecordHandler>();
+            var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
 
             var fakeMessageSender = Substitute.For<IMessageSender>();
 
@@ -129,7 +163,8 @@ namespace LogApi.IntegrationTests
             var sut = new TgsLog(
                 logRecordProcessor,
                 adminLogProcessor,
-                apiLogProcessor);
+                apiLogProcessor,
+                NullLogger<TgsLog>.Instance);
 
             sut.SetLogger("test");
 
