@@ -109,11 +109,14 @@ pipeline {
         }
 
         stage('Deploy log-api') { 
+            environment {
+                resource = getResources(env.k8s_config,env.kube_ns,"log-api")
+            }
             steps {
                 withKubeConfig([credentialsId: env.k8s_config]) {
                     withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
                         sh '''
-                            helm template deployment/k8s/log-api \
+                            cat << EOF | yq e -P | helm template deployment/k8s/log-api \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
                                 --set connectionStrings.redis="$tgs_redis" \
@@ -121,8 +124,13 @@ pipeline {
                                 --set autoscaling.enabled=${autoscaling} \
                                 --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                                 --set notifyPath="$tgs_notifyPath"
-
-                            helm template deployment/k8s/log-api \
+                                -f -
+                            {
+                                "resources": $resources
+                            }
+                        '''
+                        sh '''
+                            cat << EOF | yq e -P | helm template deployment/k8s/log-api \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
                                 --set connectionStrings.redis="$tgs_redis" \
@@ -130,7 +138,10 @@ pipeline {
                                 --set autoscaling.enabled=${autoscaling} \
                                 --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
                                 --set notifyPath="$tgs_notifyPath" \
-                            | kubectl -n ${kube_ns} apply -f -
+                             -f - | kubectl -n ${kube_ns} apply -f -
+                            {
+                                "resources": $resources
+                            }
                         '''
                     }
                 }
