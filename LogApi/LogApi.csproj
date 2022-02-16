@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<UserSecretsId>59c8d32a-4883-48ff-ae1e-1c0ee1ab8a99</UserSecretsId>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<AssemblyName>TGS.Apis.LogApi</AssemblyName>
 		<RootNamespace>TGS.Apis.LogApi</RootNamespace>

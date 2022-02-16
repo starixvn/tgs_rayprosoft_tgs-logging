@@ -3,8 +3,8 @@ using TGS.NotifyApi.Messages;
 
 namespace Tgs.NotifyService.Client
 {
-	public interface INotifyClient
-	{
-		ValueTask SendAsync(NotifyLogRequest request);
-	}
+    public interface INotifyClient
+    {
+        ValueTask SendAsync(NotifyLogRequest request);
+    }
 }

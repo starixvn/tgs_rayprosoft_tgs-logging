@@ -13,89 +13,83 @@ using Tgs.LogApi.Repositories.Entities;
 using Tgs.Logging;
 using Tgs.MessageQueue;
 
-namespace LogApi.IntegrationTests
+namespace LogApi.IntegrationTests;
+
+[TestFixture]
+public class ApiLogTests
 {
-    [TestFixture]
-    public class ApiLogTests
+    [Test]
+    public async Task Send_ApiLogEvent_By_TgsLog()
     {
-        [Test]
-        public async Task Send_ApiLogEvent_By_TgsLog()
-        {
-            var tcs = new TaskCompletionSource();
-            var fakeTgsRepository = Substitute.For<ITgsRepository>();
+        var tcs = new TaskCompletionSource();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-            using var testWebApp = new TestLogApiApplication(builder =>
-            {
-                builder.ConfigureServices(services =>
+        using var testWebApp = new TestLogApiApplication(builder => builder.ConfigureServices(
+            services => services
+                .AddSingleton(sp => ActivatorUtilities.CreateInstance<ApiLogHandler>(sp))
+                .AddSingleton(fakeTgsRepository)
+                .Configure<LogApiOptions>(options =>
                 {
-                    services
-                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<ApiLogHandler>(sp))
-                        .AddSingleton(fakeTgsRepository)
-                        .Configure<LogApiOptions>(options =>
-                        {
-                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
-                            options.UnrestrictedLoggers = Array.Empty<string>();
-                        })
-                        .AddFakeNatsMessageQueue()
-                        .AddSingleton(sp =>
-                        {
-                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
-                            dbContextOptionsBuilder
-                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                                .ConfigureWarnings(x => x.Ignore(
-                                    InMemoryEventId.TransactionIgnoredWarning));
+                    options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                    options.UnrestrictedLoggers = Array.Empty<string>();
+                })
+                .AddFakeNatsMessageQueue()
+                .AddSingleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
 
-                            return new TgsContext(dbContextOptionsBuilder.Options);
-                        });
-                });
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                })));
+
+        var handler = testWebApp.Services.GetRequiredService<ApiLogHandler>();
+
+        var fakeMessageSender = Substitute.For<IMessageSender>();
+
+        _ = fakeMessageSender
+            .PublishAsync(
+                Arg.Any<string>(),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<IEnumerable<MessageHeaderValue>>())
+            .Returns(callInfo =>
+            {
+                var data = callInfo.Arg<ReadOnlyMemory<byte>>();
+
+                return new ValueTask(Task.Run(async () =>
+                {
+                    await handler.HandleAsync(data);
+                }));
+                ;
             });
 
-            var handler = testWebApp.Services.GetRequiredService<ApiLogHandler>();
+        _ = fakeTgsRepository.SaveApiLogsAsync(Arg.Any<IEnumerable<ApiLogEvent>>())
+            .Returns(callInfo =>
+            {
+                tcs.SetResult();
+                return ValueTask.CompletedTask;
+            });
 
-            var fakeMessageSender = Substitute.For<IMessageSender>();
+        var apiLogProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
+            "LogRecordEvent",
+            fakeMessageSender);
+        var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
+            "AdminLogEvent",
+            fakeMessageSender);
+        var logRecordProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
+            "ApiLogEvent",
+            fakeMessageSender);
 
-            fakeMessageSender
-                .PublishAsync(
-                    Arg.Any<string>(),
-                    Arg.Any<ReadOnlyMemory<byte>>(),
-                    Arg.Any<IEnumerable<MessageHeaderValue>>())
-                .Returns(callInfo =>
-                {
-                    var data = callInfo.Arg<ReadOnlyMemory<byte>>();
+        var sut = new TgsLog(
+            apiLogProcessor,
+            adminLogProcessor,
+            logRecordProcessor,
+            NullLogger<TgsLog>.Instance);
 
-                    return new ValueTask(Task.Run(async () =>
-                    {
-                        await handler.HandleAsync(data);
-                    }));
-                    ;
-                });
+        sut.LogApi(new ApiLogEvent());
 
-            fakeTgsRepository.SaveApiLogsAsync(Arg.Any<IEnumerable<ApiLogEvent>>())
-                .Returns(callInfo =>
-                {
-                    tcs.SetResult();
-                    return ValueTask.CompletedTask;
-                });
-
-            var apiLogProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
-                "LogRecordEvent",
-                fakeMessageSender);
-            var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
-                "AdminLogEvent",
-                fakeMessageSender);
-            var logRecordProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
-                "ApiLogEvent",
-                fakeMessageSender);
-
-            var sut = new TgsLog(
-                apiLogProcessor,
-                adminLogProcessor,
-                logRecordProcessor,
-                NullLogger<TgsLog>.Instance);
-
-            sut.LogApi(new ApiLogEvent());
-
-            await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
-        }
+        await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
     }
 }

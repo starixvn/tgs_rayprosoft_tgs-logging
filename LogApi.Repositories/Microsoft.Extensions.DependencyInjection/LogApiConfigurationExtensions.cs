@@ -5,21 +5,20 @@ using Tgs.LogApi.Repositories;
 using Tgs.LogApi.Repositories.Entities;
 using Tgs.NotifyService.Client;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class LogApiConfigurationExtensions
-    {
-        public static LogApiConfiguration AddDbTgsRepository(
-            this LogApiConfiguration configuration,
-            Action<IServiceProvider, DbContextOptionsBuilder> efConfigure,
-            Action<NotifyClientOptions, IServiceProvider> notifyConfigure)
-        {
-            configuration.Services
-                .AddDbContext<TgsContext>(efConfigure)
-                .AddNotifyClient(notifyConfigure);
+namespace Microsoft.Extensions.DependencyInjection;
 
-            return configuration
-                .AddTgsRepository<TgsRepository>();
-        }
+public static class LogApiConfigurationExtensions
+{
+    public static LogApiConfiguration AddDbTgsRepository(
+        this LogApiConfiguration configuration,
+        Action<IServiceProvider, DbContextOptionsBuilder> efConfigure,
+        Action<NotifyClientOptions, IServiceProvider> notifyConfigure)
+    {
+        _ = configuration.Services
+            .AddDbContext<TgsContext>(efConfigure)
+            .AddNotifyClient(notifyConfigure);
+
+        return configuration
+            .AddTgsRepository<TgsRepository>();
     }
 }
