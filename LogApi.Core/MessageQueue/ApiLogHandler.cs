@@ -27,7 +27,7 @@ namespace Tgs.LogApi.MessageQueue
             _options = optionsAccessor.Value;
         }
 
-        public ValueTask HandleAsync(byte[] data, CancellationToken cancellationToken = default)
+        public ValueTask HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
         {
             var apiLog = MessagePackSerializer.Deserialize<ApiLogEvent>(
                  data,
@@ -36,7 +36,7 @@ namespace Tgs.LogApi.MessageQueue
             _subject.Send(apiLog);
 
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation(JsonSerializer.Serialize(apiLog));   
+                _logger.LogInformation(JsonSerializer.Serialize(apiLog));
 
             return ValueTask.CompletedTask;
         }

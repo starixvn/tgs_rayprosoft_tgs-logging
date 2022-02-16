@@ -56,11 +56,11 @@ namespace LogApi.IntegrationTests
             fakeMessageSender
                 .PublishAsync(
                     Arg.Any<string>(),
-                    Arg.Any<byte[]>(),
+                    Arg.Any<ReadOnlyMemory<byte>>(),
                     Arg.Any<IEnumerable<MessageHeaderValue>>())
                 .Returns(callInfo =>
                 {
-                    var data = callInfo.Arg<byte[]>();
+                    var data = callInfo.Arg<ReadOnlyMemory<byte>>();
 
                     return new ValueTask(Task.Run(async () =>
                     {

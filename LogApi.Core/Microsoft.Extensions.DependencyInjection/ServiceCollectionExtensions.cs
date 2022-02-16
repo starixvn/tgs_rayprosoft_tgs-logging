@@ -27,9 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 .RegisterAllServiceUtilityTypes(
                     Assembly.GetExecutingAssembly(),
                     ServiceLifetime.Transient)
-                .AddNatsMessageQueue(config =>
+                .AddMessageQueue()
+                .AddNatsMessageQueue(natsConfig =>
                 {
-                    config
+                    natsConfig
                         .ConfigQueueOptions((options, sp) =>
                         {
                             var logApiOptions = sp.GetRequiredService<IOptions<LogApiOptions>>().Value;
@@ -42,6 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         .AddHandler<AdminLogHandler>("tgs.log.admin", "tgs.log.admin")
                         .AddHandler<LogRecordHandler>("LogRecordEvent", "LogRecordEvent")
                         .AddHandler<LogRecordHandler>("tgs.log.log-record", "tgs.log.log-record");
-                }));
+                })
+                .Services);
     }
 }

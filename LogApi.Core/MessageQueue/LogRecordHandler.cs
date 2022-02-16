@@ -27,7 +27,7 @@ namespace Tgs.LogApi.MessageQueue
             _options = optionsAccessor.Value;
         }
 
-        public ValueTask HandleAsync(byte[] data, CancellationToken cancellationToken = default)
+        public ValueTask HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
         {
             var logRecord = MessagePackSerializer.Deserialize<LogRecordEvent>(
                 data,
