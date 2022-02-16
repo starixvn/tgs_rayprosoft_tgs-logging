@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
                     var logApiOptions = sp.GetRequiredService<IOptions<LogApiOptions>>().Value;
 
                     options.Url = logApiOptions.NatsUrl;
+                    options.MaxReconnect = -1;
                 })
                 .AddHandler<ApiLogHandler>("ApiLogEvent", "ApiLogEvent")
                 .AddHandler<ApiLogHandler>("tgs.log.apilog", "tgs.log.apilog")

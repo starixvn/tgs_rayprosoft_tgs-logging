@@ -15,7 +15,7 @@
     </PackageReference>
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="Tgs.MessageQueue" Version="2.0.0" />
-    <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.0.0" />
+    <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.0.2" />
     <PackageReference Include="TGS.Notify.Messages" Version="0.0.3" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
   </ItemGroup>
