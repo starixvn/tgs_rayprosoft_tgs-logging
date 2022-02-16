@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -22,7 +23,10 @@ public class TgsLoggerTests
 
         var tcs = new TaskCompletionSource<bool>();
         fakeMessageSender
-            .When(fake => fake.PublishAsync(Arg.Any<string>(), Arg.Any<ReadOnlyMemory<byte>>()))
+            .When(fake => fake.PublishAsync(
+                Arg.Any<string>(),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<CancellationToken>()))
             .Do(Callback.Always(callInfo =>
             {
                 tcs.SetResult(true);

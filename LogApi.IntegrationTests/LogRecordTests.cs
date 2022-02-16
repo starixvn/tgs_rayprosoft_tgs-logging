@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -55,7 +56,8 @@ public class LogRecordTests
             .PublishAsync(
                 Arg.Any<string>(),
                 Arg.Any<ReadOnlyMemory<byte>>(),
-                Arg.Any<IEnumerable<MessageHeaderValue>>())
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
+                Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
                 var data = callInfo.Arg<ReadOnlyMemory<byte>>();
@@ -123,7 +125,8 @@ public class LogRecordTests
             .PublishAsync(
                 Arg.Any<string>(),
                 Arg.Any<ReadOnlyMemory<byte>>(),
-                Arg.Any<IEnumerable<MessageHeaderValue>>())
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
+                Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
                 var data = callInfo.Arg<ReadOnlyMemory<byte>>();
