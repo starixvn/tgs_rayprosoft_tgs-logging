@@ -5,41 +5,40 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Tgs.LogApi
+namespace Tgs.LogApi;
+
+internal class DatabaseProcessManagerBackgroundService : BackgroundService
 {
-    internal class DatabaseProcessManagerBackgroundService : BackgroundService
+    private readonly TaskSubject _taskSubject;
+    private readonly ILogger<DatabaseProcessManagerBackgroundService> _logger;
+    private IDisposable? _taskSubscription;
+
+    public DatabaseProcessManagerBackgroundService(TaskSubject taskSubject, ILogger<DatabaseProcessManagerBackgroundService> logger)
     {
-        private readonly TaskSubject _taskSubject;
-        private readonly ILogger<DatabaseProcessManagerBackgroundService> _logger;
-        private IDisposable? _taskSubscription;
+        _taskSubject = taskSubject ?? throw new ArgumentNullException(nameof(taskSubject));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public DatabaseProcessManagerBackgroundService(TaskSubject taskSubject, ILogger<DatabaseProcessManagerBackgroundService> logger)
-        {
-            _taskSubject = taskSubject ?? throw new ArgumentNullException(nameof(taskSubject));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            _taskSubscription = _taskSubject
-                .Synchronize()
-                .Select(callback => Observable.FromAsync(async () =>
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _taskSubscription = _taskSubject
+            .Synchronize()
+            .Select(callback => Observable.FromAsync(async () =>
+            {
+                try
                 {
-                    try
-                    {
-                        await callback().ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Batch subscribe error !");
-                    }
-                }))
-                .Concat()
-                .Subscribe();
+                    await callback().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Batch subscribe error !");
+                }
+            }))
+            .Concat()
+            .Subscribe();
 
-            stoppingToken.Register(() => _taskSubscription.Dispose());
+        _ = stoppingToken.Register(() => _taskSubscription.Dispose());
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

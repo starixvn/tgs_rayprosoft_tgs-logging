@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Reactive.Subjects;
 
-namespace Tgs.LogApi
+namespace Tgs.LogApi;
+
+internal abstract class LogEventSubject<TLogEvent> : IObservable<TLogEvent>
 {
-    internal abstract class LogEventSubject<TLogEvent> : IObservable<TLogEvent>
-    {
-        private Subject<TLogEvent> _subject = new Subject<TLogEvent>();
+    private readonly Subject<TLogEvent> _subject = new();
 
-        public void Send(TLogEvent logEvent)
-            => _subject.OnNext(logEvent);
+    public void Send(TLogEvent logEvent)
+        => _subject.OnNext(logEvent);
 
-        public IDisposable Subscribe(IObserver<TLogEvent> observer)
-            => _subject.Subscribe(observer);
-    }
+    public IDisposable Subscribe(IObserver<TLogEvent> observer)
+        => _subject.Subscribe(observer);
 }

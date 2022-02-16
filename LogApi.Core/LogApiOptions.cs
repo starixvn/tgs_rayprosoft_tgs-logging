@@ -2,19 +2,18 @@
 using MessagePack;
 using Tgs.Logging;
 
-namespace Tgs.LogApi
+namespace Tgs.LogApi;
+
+public class LogApiOptions
 {
-	public class LogApiOptions
-	{
-		public int BatchInsertCounts { set; get; } = 10;
+    public int BatchInsertCounts { set; get; } = 10;
 
-		public TgsLogLevel LogLevel { set; get; } = TgsLogLevel.All;
+    public TgsLogLevel LogLevel { set; get; } = TgsLogLevel.All;
 
-		public string NatsUrl { get; set; } = "nats://localhost:4222";
+    public string NatsUrl { get; set; } = "nats://localhost:4222";
 
-		public MessagePackSerializerOptions SerializerOptions { get; set; } =
-			MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
+    public MessagePackSerializerOptions SerializerOptions { get; set; } =
+        MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
-		public string[] UnrestrictedLoggers { set; get; } = Array.Empty<string>();
-	}
+    public string[] UnrestrictedLoggers { set; get; } = Array.Empty<string>();
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -15,162 +16,153 @@ using Tgs.LogApi.Repositories.Entities;
 using Tgs.Logging;
 using Tgs.MessageQueue;
 
-namespace LogApi.IntegrationTests
+namespace LogApi.IntegrationTests;
+
+[TestFixture]
+public class LogRecordTests
 {
-    [TestFixture]
-    public class LogRecordTests
+    [Test]
+    public async Task Send_LogRecordEvent_By_Logger()
     {
-        [Test]
-        public async Task Send_LogRecordEvent_By_Logger()
-        {
-            var tcs = new TaskCompletionSource();
-            var fakeTgsRepository = Substitute.For<ITgsRepository>();
+        var tcs = new TaskCompletionSource();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-            using var testWebApp = new TestLogApiApplication(builder =>
-            {
-                builder.ConfigureServices(services =>
+        using var testWebApp = new TestLogApiApplication(builder => builder.ConfigureServices(
+            services => services
+                .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                .AddSingleton(fakeTgsRepository)
+                .Configure<LogApiOptions>(options =>
                 {
-                    services
-                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-                        .AddSingleton(fakeTgsRepository)
-                        .Configure<LogApiOptions>(options =>
-                        {
-                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
-                            options.UnrestrictedLoggers = Array.Empty<string>();
-                        })
-                        .AddFakeNatsMessageQueue()
-                        .AddSingleton(sp =>
-                        {
-                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
-                            dbContextOptionsBuilder
-                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                                .ConfigureWarnings(x => x.Ignore(
-                                    InMemoryEventId.TransactionIgnoredWarning));
+                    options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                    options.UnrestrictedLoggers = Array.Empty<string>();
+                })
+                .AddFakeNatsMessageQueue()
+                .AddSingleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
 
-                            return new TgsContext(dbContextOptionsBuilder.Options);
-                        });
-                });
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                })));
+
+        var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
+
+        var fakeMessageSender = Substitute.For<IMessageSender>();
+
+        _ = fakeMessageSender
+            .PublishAsync(
+                Arg.Any<string>(),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var data = callInfo.Arg<ReadOnlyMemory<byte>>();
+
+                handler.HandleAsync(data).GetAwaiter().GetResult();
+
+                return ValueTask.CompletedTask;
             });
 
-            var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
-
-            var fakeMessageSender = Substitute.For<IMessageSender>();
-
-            fakeMessageSender
-                .PublishAsync(
-                    Arg.Any<string>(),
-                    Arg.Any<ReadOnlyMemory<byte>>(),
-                    Arg.Any<IEnumerable<MessageHeaderValue>>())
-                .Returns(callInfo =>
-                {
-                    var data = callInfo.Arg<ReadOnlyMemory<byte>>();
-
-                    handler.HandleAsync(data).GetAwaiter().GetResult();
-
-                    return ValueTask.CompletedTask;
-                });
-
-            fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
-                .Returns(callInfo =>
-                {
-                    tcs.SetResult();
-                    return ValueTask.CompletedTask;
-                });
-
-            var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
-                "LogRecordEvent",
-                fakeMessageSender);
-            var fakeOptionsMonitor = Substitute.For<IOptionsMonitor<TgsLoggerOptions>>();
-
-            var loggerProvider = new TgsLoggerProvider(
-                logRecordProcessor,
-                fakeOptionsMonitor);
-
-            var sut = loggerProvider.CreateLogger("test");
-
-            sut.LogInformation("test");
-
-            await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
-        }
-
-        [Test]
-        public async Task Send_LogRecordEvent_By_TgsLog()
-        {
-            var tcs = new TaskCompletionSource();
-            var fakeTgsRepository = Substitute.For<ITgsRepository>();
-
-            using var testWebApp = new TestLogApiApplication(builder =>
+        _ = fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
+            .Returns(callInfo =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    services
-                        .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
-                        .AddSingleton(fakeTgsRepository)
-                        .Configure<LogApiOptions>(options =>
-                        {
-                            options.LogLevel = Tgs.Logging.TgsLogLevel.All;
-                            options.UnrestrictedLoggers = Array.Empty<string>();
-                        })
-                        .AddFakeNatsMessageQueue()
-                        .AddSingleton(sp =>
-                        {
-                            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
-                            dbContextOptionsBuilder
-                                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                                .ConfigureWarnings(x => x.Ignore(
-                                    InMemoryEventId.TransactionIgnoredWarning));
-
-                            return new TgsContext(dbContextOptionsBuilder.Options);
-                        });
-                });
+                tcs.SetResult();
+                return ValueTask.CompletedTask;
             });
 
-            var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
+        var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
+            "LogRecordEvent",
+            fakeMessageSender);
+        var fakeOptionsMonitor = Substitute.For<IOptionsMonitor<TgsLoggerOptions>>();
 
-            var fakeMessageSender = Substitute.For<IMessageSender>();
+        var loggerProvider = new TgsLoggerProvider(
+            logRecordProcessor,
+            fakeOptionsMonitor);
 
-            fakeMessageSender
-                .PublishAsync(
-                    Arg.Any<string>(),
-                    Arg.Any<ReadOnlyMemory<byte>>(),
-                    Arg.Any<IEnumerable<MessageHeaderValue>>())
-                .Returns(callInfo =>
+        var sut = loggerProvider.CreateLogger("test");
+
+        sut.LogInformation("test");
+
+        await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
+    }
+
+    [Test]
+    public async Task Send_LogRecordEvent_By_TgsLog()
+    {
+        var tcs = new TaskCompletionSource();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
+
+        using var testWebApp = new TestLogApiApplication(builder => builder.ConfigureServices(
+            services => services
+                .AddSingleton(sp => ActivatorUtilities.CreateInstance<LogRecordHandler>(sp))
+                .AddSingleton(fakeTgsRepository)
+                .Configure<LogApiOptions>(options =>
                 {
-                    var data = callInfo.Arg<ReadOnlyMemory<byte>>();
-
-                    handler.HandleAsync(data).GetAwaiter().GetResult();
-
-                    return ValueTask.CompletedTask;
-                });
-
-            fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
-                .Returns(callInfo =>
+                    options.LogLevel = Tgs.Logging.TgsLogLevel.All;
+                    options.UnrestrictedLoggers = Array.Empty<string>();
+                })
+                .AddFakeNatsMessageQueue()
+                .AddSingleton(sp =>
                 {
-                    tcs.SetResult();
-                    return ValueTask.CompletedTask;
-                });
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
 
-            var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
-                "LogRecordEvent",
-                fakeMessageSender);
-            var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
-                "AdminLogEvent",
-                fakeMessageSender);
-            var apiLogProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
-                "ApiLogEvent",
-                fakeMessageSender);
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                })));
 
-            var sut = new TgsLog(
-                logRecordProcessor,
-                adminLogProcessor,
-                apiLogProcessor,
-                NullLogger<TgsLog>.Instance);
+        var handler = testWebApp.Services.GetRequiredService<LogRecordHandler>();
 
-            sut.SetLogger("test");
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
-            sut.LogInfo("test", null, "file", "member", 0);
+        _ = fakeMessageSender
+            .PublishAsync(
+                Arg.Any<string>(),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var data = callInfo.Arg<ReadOnlyMemory<byte>>();
 
-            await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
-        }
+                handler.HandleAsync(data).GetAwaiter().GetResult();
+
+                return ValueTask.CompletedTask;
+            });
+
+        _ = fakeTgsRepository.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>())
+            .Returns(callInfo =>
+            {
+                tcs.SetResult();
+                return ValueTask.CompletedTask;
+            });
+
+        var logRecordProcessor = new TgsLogBackgroundProcessor<LogRecordEvent>(
+            "LogRecordEvent",
+            fakeMessageSender);
+        var adminLogProcessor = new TgsLogBackgroundProcessor<AdminLogEvent>(
+            "AdminLogEvent",
+            fakeMessageSender);
+        var apiLogProcessor = new TgsLogBackgroundProcessor<ApiLogEvent>(
+            "ApiLogEvent",
+            fakeMessageSender);
+
+        var sut = new TgsLog(
+            logRecordProcessor,
+            adminLogProcessor,
+            apiLogProcessor,
+            NullLogger<TgsLog>.Instance);
+
+        _ = sut.SetLogger("test");
+
+        sut.LogInfo("test", null, "file", "member", 0);
+
+        await tcs.Task.ConfigureTimeout(TimeSpan.FromSeconds(3));
     }
 }
