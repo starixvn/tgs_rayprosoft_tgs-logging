@@ -2,27 +2,26 @@
 using Tgs.Logging;
 using Tgs.MessageQueue;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddTgsLog(this IServiceCollection services)
-        {
-            services.TryAddSingleton(
-                sp => new TgsLogBackgroundProcessor<LogRecordEvent>(
-                "tgs.log.log-record",
-                sp.GetRequiredService<IMessageSender>()));
-            services.AddSingleton(
-                sp => new TgsLogBackgroundProcessor<AdminLogEvent>(
-                "tgs.log.admin",
-                sp.GetRequiredService<IMessageSender>()));
-            services.AddSingleton(
-                sp => new TgsLogBackgroundProcessor<ApiLogEvent>(
-                "tgs.log.apilog",
-                sp.GetRequiredService<IMessageSender>()));
-            services.TryAddTransient<ITgsLog, TgsLog>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            return services;
-        }
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddTgsLog(this IServiceCollection services)
+    {
+        services.TryAddSingleton(
+            sp => new TgsLogBackgroundProcessor<LogRecordEvent>(
+            "tgs.log.log-record",
+            sp.GetRequiredService<IMessageSender>()));
+        services.TryAddSingleton(
+            sp => new TgsLogBackgroundProcessor<AdminLogEvent>(
+            "tgs.log.admin",
+            sp.GetRequiredService<IMessageSender>()));
+        services.TryAddSingleton(
+            sp => new TgsLogBackgroundProcessor<ApiLogEvent>(
+            "tgs.log.apilog",
+            sp.GetRequiredService<IMessageSender>()));
+        services.TryAddTransient<ITgsLog, TgsLog>();
+
+        return services;
     }
 }

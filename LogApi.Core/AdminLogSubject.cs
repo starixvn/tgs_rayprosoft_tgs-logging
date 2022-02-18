@@ -1,8 +1,7 @@
 ﻿using Tgs.Logging;
 
-namespace Tgs.LogApi
+namespace Tgs.LogApi;
+
+internal class AdminLogSubject : LogEventSubject<AdminLogEvent>
 {
-	internal class AdminLogSubject : LogEventSubject<AdminLogEvent>
-	{
-	}
 }

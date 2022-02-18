@@ -6,62 +6,61 @@ using Tgs.LogApi;
 using Tgs.LogApi.ApplicationServices;
 using Tgs.Logging;
 
-namespace LogApi.UnitTests
+namespace LogApi.UnitTests;
+
+public class BatchCommandTests
 {
-	public class BatchCommandTests
-	{
-		[Test]
-		public async Task SaveAdminLogBatch_Should_Call_Repository()
-		{
-			var fakeTgsRepository = Substitute.For<ITgsRepository>();
+    [Test]
+    public async Task SaveAdminLogBatch_Should_Call_Repository()
+    {
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-			var sut = new SaveAdminLogBatchCommandService(fakeTgsRepository);
+        var sut = new SaveAdminLogBatchCommandService(fakeTgsRepository);
 
-			var command = new SaveAdminLogBatchCommand(new[] {
-				new AdminLogEvent(),
-				new AdminLogEvent()
-			});
+        var command = new SaveAdminLogBatchCommand(new[] {
+                new AdminLogEvent(),
+                new AdminLogEvent()
+            });
 
-			await sut.ExecuteAsync(command);
+        await sut.ExecuteAsync(command);
 
-			_ = fakeTgsRepository.Received(1)
-				.SaveAdminLogsAsync(Arg.Any<IEnumerable<AdminLogEvent>>());
-		}
+        _ = fakeTgsRepository.Received(1)
+            .SaveAdminLogsAsync(Arg.Any<IEnumerable<AdminLogEvent>>());
+    }
 
-		[Test]
-		public async Task SaveApiLogBatch_Should_Call_Repository()
-		{
-			var fakeTgsRepository = Substitute.For<ITgsRepository>();
+    [Test]
+    public async Task SaveApiLogBatch_Should_Call_Repository()
+    {
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-			var sut = new SaveApiLogBatchCommandService(fakeTgsRepository);
+        var sut = new SaveApiLogBatchCommandService(fakeTgsRepository);
 
-			var command = new SaveApiLogBatchCommand(new[] {
-				new ApiLogEvent(),
-				new ApiLogEvent()
-			});
+        var command = new SaveApiLogBatchCommand(new[] {
+                new ApiLogEvent(),
+                new ApiLogEvent()
+            });
 
-			await sut.ExecuteAsync(command);
+        await sut.ExecuteAsync(command);
 
-			_ = fakeTgsRepository.Received(1)
-				.SaveApiLogsAsync(Arg.Any<IEnumerable<ApiLogEvent>>());
-		}
+        _ = fakeTgsRepository.Received(1)
+            .SaveApiLogsAsync(Arg.Any<IEnumerable<ApiLogEvent>>());
+    }
 
-		[Test]
-		public async Task SaveLogRecordBatch_Should_Call_RepositoryAsync()
-		{
-			var fakeTgsRepository = Substitute.For<ITgsRepository>();
+    [Test]
+    public async Task SaveLogRecordBatch_Should_Call_RepositoryAsync()
+    {
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-			var sut = new SaveLogRecordBatchCommandService(fakeTgsRepository);
+        var sut = new SaveLogRecordBatchCommandService(fakeTgsRepository);
 
-			var command = new SaveLogRecordBatchCommand(new[] {
-				new LogRecordEvent(),
-				new LogRecordEvent()
-			});
+        var command = new SaveLogRecordBatchCommand(new[] {
+                new LogRecordEvent(),
+                new LogRecordEvent()
+            });
 
-			await sut.ExecuteAsync(command);
+        await sut.ExecuteAsync(command);
 
-			_ = fakeTgsRepository.Received(1)
-				.SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>());
-		}
-	}
+        _ = fakeTgsRepository.Received(1)
+            .SaveLogRecordsAsync(Arg.Any<IEnumerable<LogRecordEvent>>());
+    }
 }
