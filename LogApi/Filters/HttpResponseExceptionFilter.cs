@@ -2,24 +2,24 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using TGS.Apis.LogApi.Exceptions;
 
-namespace TGS.Apis.LogApi.Filters
+namespace TGS.Apis.LogApi.Filters;
+
+public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {
-    public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
+    public int Order { get; set; } = int.MaxValue - 10;
+
+    public void OnActionExecuting(ActionExecutingContext context)
+    { }
+
+    public void OnActionExecuted(ActionExecutedContext context)
     {
-        public int Order { get; set; } = int.MaxValue - 10;
-
-        public void OnActionExecuting(ActionExecutingContext context) { }
-
-        public void OnActionExecuted(ActionExecutedContext context)
+        if (context.Exception is HttpResponseException exception)
         {
-            if (context.Exception is HttpResponseException exception)
+            context.Result = new ObjectResult(exception.Value)
             {
-                context.Result = new ObjectResult(exception.Value)
-                {
-                    StatusCode = exception.Status,
-                };
-                context.ExceptionHandled = true;
-            }
+                StatusCode = exception.Status,
+            };
+            context.ExceptionHandled = true;
         }
     }
 }

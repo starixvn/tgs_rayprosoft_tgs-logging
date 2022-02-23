@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Tgs.Logging;
 
-namespace Tgs.LogApi
+namespace Tgs.LogApi;
+
+public interface ITgsRepository
 {
-	public interface ITgsRepository
-	{
-		ValueTask SaveAdminLogsAsync(IEnumerable<AdminLogEvent> adminLogEvents);
+    ValueTask SaveAdminLogsAsync(IEnumerable<AdminLogEvent> adminLogEvents);
 
-		ValueTask SaveApiLogsAsync(IEnumerable<ApiLogEvent> apiLogEvents);
+    ValueTask SaveApiLogsAsync(IEnumerable<ApiLogEvent> apiLogEvents);
 
-		ValueTask SaveLogRecordsAsync(IEnumerable<LogRecordEvent> logRecordEvents);
-	}
+    ValueTask SaveLogRecordsAsync(IEnumerable<LogRecordEvent> logRecordEvents);
 }

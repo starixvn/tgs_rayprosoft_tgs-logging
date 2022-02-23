@@ -1,48 +1,48 @@
 ﻿{
-   "CodeGenerationMode": 0,
-   "ContextClassName": "TgsContext",
-   "ContextNamespace": "Entities",
-   "DefaultDacpacSchema": null,
-   "FilterSchemas": true,
-   "IncludeConnectionString": false,
-   "ModelNamespace": "Entities",
-   "OutputContextPath": "Entities",
-   "OutputPath": "Entities\/Models",
-   "ProjectRootNamespace": "Tgs.LogApi.Repositories",
-   "Schemas": [
-      {
-         "Name": "log"
-      }
-   ],
-   "SelectedHandlebarsLanguage": 0,
-   "SelectedToBeGenerated": 0,
-   "Tables": [
-      {
-         "Name": "log.admin_logs",
-         "ObjectType": 0
-      },
-      {
-         "Name": "log.api_logs",
-         "ObjectType": 0
-      },
-      {
-         "Name": "log.log_records",
-         "ObjectType": 0
-      }
-   ],
-   "UiHint": ".tgs",
-   "UseBoolPropertiesWithoutDefaultSql": true,
-   "UseDatabaseNames": false,
-   "UseDbContextSplitting": true,
-   "UseFluentApiOnly": false,
-   "UseHandleBars": false,
-   "UseInflector": true,
-   "UseLegacyPluralizer": false,
-   "UseNoConstructor": false,
-   "UseNoNavigations": false,
-   "UseNoObjectFilter": false,
-   "UseNodaTime": false,
-   "UseNullableReferences": true,
-   "UseSchemaFolders": false,
-   "UseSpatial": false
+	"CodeGenerationMode": 0,
+	"ContextClassName": "TgsContext",
+	"ContextNamespace": "Entities",
+	"DefaultDacpacSchema": null,
+	"FilterSchemas": true,
+	"IncludeConnectionString": false,
+	"ModelNamespace": "Entities",
+	"OutputContextPath": "Entities",
+	"OutputPath": "Entities\/Models",
+	"ProjectRootNamespace": "Tgs.LogApi.Repositories",
+	"Schemas": [
+		{
+			"Name": "log"
+		}
+	],
+	"SelectedHandlebarsLanguage": 0,
+	"SelectedToBeGenerated": 0,
+	"Tables": [
+		{
+			"Name": "log.admin_logs",
+			"ObjectType": 0
+		},
+		{
+			"Name": "log.api_logs",
+			"ObjectType": 0
+		},
+		{
+			"Name": "log.log_records",
+			"ObjectType": 0
+		}
+	],
+	"UiHint": ".tgs",
+	"UseBoolPropertiesWithoutDefaultSql": true,
+	"UseDatabaseNames": false,
+	"UseDbContextSplitting": true,
+	"UseFluentApiOnly": false,
+	"UseHandleBars": false,
+	"UseInflector": true,
+	"UseLegacyPluralizer": false,
+	"UseNoConstructor": false,
+	"UseNoNavigations": false,
+	"UseNoObjectFilter": false,
+	"UseNodaTime": false,
+	"UseNullableReferences": true,
+	"UseSchemaFolders": false,
+	"UseSpatial": false
 }
