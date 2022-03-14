@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0;</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.16-beta</Version>
+		<Version>0.0.17-beta</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 		<LangVersion>10.0</LangVersion>
@@ -38,5 +38,6 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Tgs Logging</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<PackageId>Tgs.Logging</PackageId>
 	</PropertyGroup>
 </Project>
