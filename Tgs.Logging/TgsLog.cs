@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
 namespace Tgs.Logging;
@@ -39,12 +40,24 @@ internal class TgsLog : ITgsLog
     public void LogAdmin(AdminLogEvent adminEvent)
     {
         adminEvent.TrackingId = TrackingId;
+        _logger.Log(
+            LogLevel.Information,
+            new EventId(0),
+            adminEvent,
+            null,
+            (state, ex) => $"{JsonSerializer.Serialize(adminEvent)}");
         _adminEventProcessor.AddRecord(adminEvent);
     }
 
     public void LogApi(ApiLogEvent apiLogEvent)
     {
         apiLogEvent.TrackingId = TrackingId;
+        _logger.Log(
+            LogLevel.Information,
+            new EventId(0),
+            apiLogEvent,
+            null,
+            (state, ex) => $"{JsonSerializer.Serialize(apiLogEvent)}");
         _apiLogEventProcessor.AddRecord(apiLogEvent);
     }
 
@@ -172,7 +185,9 @@ internal class TgsLog : ITgsLog
         if (_logger.IsEnabled(logLevel))
             _logger.Log(
                 logLevel,
+                new EventId(0),
+                logEvent,
                 exception,
-                JsonSerializer.Serialize(logEvent));
+                (state, ex) => $"{JsonSerializer.Serialize(logEvent)}");
     }
 }
