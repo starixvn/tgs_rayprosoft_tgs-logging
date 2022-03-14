@@ -38,5 +38,6 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Tgs Logging</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<PackageId>Tgs.Logging</PackageId>
 	</PropertyGroup>
 </Project>
