@@ -45,7 +45,7 @@ internal class TgsLog : ITgsLog
             new EventId(0),
             adminEvent,
             null,
-            (state, ex) => $"{JsonSerializer.Serialize(adminEvent)}");
+            (state, ex) => $"Admin Log Record.");
         _adminEventProcessor.AddRecord(adminEvent);
     }
 
@@ -57,7 +57,7 @@ internal class TgsLog : ITgsLog
             new EventId(0),
             apiLogEvent,
             null,
-            (state, ex) => $"{JsonSerializer.Serialize(apiLogEvent)}");
+            (state, ex) => $"Api Log Record.");
         _apiLogEventProcessor.AddRecord(apiLogEvent);
     }
 
@@ -188,6 +188,6 @@ internal class TgsLog : ITgsLog
                 new EventId(0),
                 logEvent,
                 exception,
-                (state, ex) => $"{JsonSerializer.Serialize(logEvent)}");
+                (state, ex) => $"LogEvent Record.");
     }
 }
