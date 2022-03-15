@@ -139,9 +139,11 @@ pipeline {
                                     -n ${kube_ns} \
                                     --set image.tag=${TAG} \
                                     --set autoscaling.enabled=${autoscaling} \
-                                -f - | kubectl -n ${kube_ns} apply -f -
+                                    -f - | kubectl -n ${kube_ns} apply -f -
                                 {
-                                    "resources": $resources
+                                    "resources": $resources,
+                                    "tolerations": [$dedicated],
+                                    "resources": $resources,
                                 }
                             """
                         }
