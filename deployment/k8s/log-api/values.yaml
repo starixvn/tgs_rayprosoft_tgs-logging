@@ -14,16 +14,8 @@ imagePullSecrets:
   - name: secret-tgs-harbor
 nameOverride: "log-api"
 fullnameOverride: "log-api"
-namespace: dev
 
 podAnnotations: {}
-
-connectionStrings:
-  tgs: Server=pgpool;Port=9999;Database=tgs;User Id=rpdev;Password=abcd1234
-  redis: redis-master,abortConnect=false,connectTimeout=3000,password=1qaz2wsx
-
-nats:
-  urls: nats://nats-client:4222
 
 notifyPath: telegram/dev/log-alert
 

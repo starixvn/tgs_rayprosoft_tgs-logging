@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "log-api.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "log-api.labels" . | nindent 4 }}
 spec:
@@ -34,11 +34,27 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: LogApi({{ .Release.Namespace }})
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
             - name: ConnectionStrings__Tgs
               valueFrom:
                 secretKeyRef:
                   name: tgs-connections
                   key: tgs
+            - name: NatsSetting__Urls
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: nats
+            - name: Notify__Path
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: notify-path
           ports:
             - name: http
               containerPort: 80
@@ -52,13 +68,14 @@ spec:
             httpGet:
               path: /health
               port: 80
-            initialDelaySeconds: 10
             periodSeconds: 5
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /health
               port: 80
             initialDelaySeconds: 5
+            failureThreshold: 30
+            periodSeconds: 2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
@@ -73,21 +90,7 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if eq .Values.namespace "staging" }}
-      nodeSelector:
-        dedicated: nonprod
+      {{- with .Values.tolerations }}
       tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: nonprod
-      {{- end }}
-      {{- if eq .Values.namespace "prod" }}
-      nodeSelector:
-        dedicated: prod
-      tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: prod
+        {{- toYaml . | nindent 8 }}
       {{- end }}
