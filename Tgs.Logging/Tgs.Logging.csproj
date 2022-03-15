@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0;</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.17-beta</Version>
+		<Version>0.0.18</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 		<LangVersion>10.0</LangVersion>
