@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Tgs.Logging;
 
@@ -42,7 +40,7 @@ internal class TgsLog : ITgsLog
         adminEvent.TrackingId = TrackingId;
         _logger.Log(
             LogLevel.Information,
-            new EventId(0),
+            new EventId(100, "AdminLog"),
             adminEvent,
             null,
             (state, ex) => $"Admin Log Record.");
@@ -54,7 +52,7 @@ internal class TgsLog : ITgsLog
         apiLogEvent.TrackingId = TrackingId;
         _logger.Log(
             LogLevel.Information,
-            new EventId(0),
+            new EventId(200, "ApiLog"),
             apiLogEvent,
             null,
             (state, ex) => $"Api Log Record.");
@@ -185,7 +183,7 @@ internal class TgsLog : ITgsLog
         if (_logger.IsEnabled(logLevel))
             _logger.Log(
                 logLevel,
-                new EventId(0),
+                new EventId(300, "LogRecord"),
                 logEvent,
                 exception,
                 (state, ex) => $"LogEvent Record.");

@@ -1,20 +1,33 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
-using TGS.Apis.LogApi;
-using TGS.Apis.LogApi.Filters;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Exporter;
+using TGS.Apis.LogApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .AddJsonFile("/config/appsettings.json", true);
+
+builder.Logging
+    .AddOpenTelemetry(options =>
+    {
+        options.IncludeFormattedMessage = true;
+        options.ParseStateValues = true;
+        _ = options.AddFluentdForwardExporter(fluentOptions =>
+        {
+            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
+            fluentOptions.Host = nodeIp;
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+            fluentOptions.UseMessagePack();
+        });
+    });
 
 builder.Services
     .AddLogApi(
@@ -95,13 +108,13 @@ builder.Services
         {
             return !httpContext.Request.Path.HasValue
                 || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                && !httpContext.Request.Path.StartsWithSegments("/health")
+                && !httpContext.Request.Path.StartsWithSegments("/metrics")
                 && !httpContext.Request.Path.StartsWithSegments("/profiler/")
                 && !new[] { "html", "ico", "png", "jpg" }.Any(
                     ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
         };
     });
-
 
 var app = builder.Build();
 
