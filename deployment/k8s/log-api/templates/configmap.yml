@@ -10,7 +10,7 @@ data:
         "LogLevel": {
           "System.Net.Http.HttpClient": "Warning",
           "Tgs.LogApi.MessageQueue.AdminLogHandler": "Warning",
-          "Tgs.LogApi.MessageQueue.ApiLogHandler": "Information",
+          "Tgs.LogApi.MessageQueue.ApiLogHandler": "Warning",
           "Tgs.LogApi.MessageQueue.LogRecordHandler": "Warning"
         }
       }
