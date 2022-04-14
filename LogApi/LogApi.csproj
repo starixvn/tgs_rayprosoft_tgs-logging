@@ -14,10 +14,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-		<PackageReference Include="prometheus-net.AspNetCore" Version="5.0.2" />
-		<PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="5.0.2" />
-		<PackageReference Include="prometheus-net.DotNetRuntime" Version="4.2.3" />
+	  <Content Remove="appsettings.Docker.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.1.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.0" />
+		<PackageReference Include="Npgsql.OpenTelemetry" Version="6.0.3" />
+		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-rc3" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9" />
+		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
