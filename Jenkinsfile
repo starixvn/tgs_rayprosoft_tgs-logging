@@ -113,37 +113,37 @@ pipeline {
             steps {
                 script {
                     withKubeConfig([credentialsId: env.k8s_config]) {
-
                         def resources = getResources(env.k8s_config, env.kube_ns, "log-api")
+                        def dedicated = getTgsSettings(env.k8s_config, env.kube_ns, "dedicated")
+                        def node_selector = getTgsSettings(env.k8s_config, env.kube_ns, "node-selector")
+                        
                         println resources
+                        println dedicated
+                        println node_selector
 
                         withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
                             sh """
                                 cat << EOF | yq e -P | helm template deployment/k8s/log-api \
+                                    -n ${kube_ns} \
                                     --set image.tag=${TAG} \
-                                    --set namespace=${kube_ns} \
-                                    --set connectionStrings.redis="$tgs_redis" \
-                                    --set nats.urls="$tgs_nats" \
                                     --set autoscaling.enabled=${autoscaling} \
-                                    --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                                    --set notifyPath="$tgs_notifyPath"
                                     -f -
                                 {
-                                    "resources": $resources
+                                    "resources": $resources,
+                                    "tolerations": [$dedicated],
+                                    "resources": $resources,
                                 }
                             """
                             sh """
                                 cat << EOF | yq e -P | helm template deployment/k8s/log-api \
+                                    -n ${kube_ns} \
                                     --set image.tag=${TAG} \
-                                    --set namespace=${kube_ns} \
-                                    --set connectionStrings.redis="$tgs_redis" \
-                                    --set nats.urls="$tgs_nats" \
                                     --set autoscaling.enabled=${autoscaling} \
-                                    --set aspNetCoreEnvironment="$tgs_aspNetCoreEnvironment" \
-                                    --set notifyPath="$tgs_notifyPath" \
-                                -f - | kubectl -n ${kube_ns} apply -f -
+                                    -f - | kubectl -n ${kube_ns} apply -f -
                                 {
-                                    "resources": $resources
+                                    "resources": $resources,
+                                    "tolerations": [$dedicated],
+                                    "resources": $resources,
                                 }
                             """
                         }

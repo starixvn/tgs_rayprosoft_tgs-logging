@@ -29,7 +29,10 @@ internal class AdminLogHandler : IMessageHandler
 
     public ValueTask HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {
-        var adminLog = MessagePackSerializer.Deserialize<AdminLogEvent>(data, _options.SerializerOptions, cancellationToken);
+        var adminLog = MessagePackSerializer.Deserialize<AdminLogEvent>(
+            data,
+            _options.SerializerOptions,
+            cancellationToken);
 
         _subject.Send(adminLog);
 

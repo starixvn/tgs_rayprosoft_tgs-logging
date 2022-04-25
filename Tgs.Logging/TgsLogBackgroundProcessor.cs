@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using MessagePack;
 using Tgs.MessageQueue;
 
@@ -8,6 +8,7 @@ namespace Tgs.Logging;
 internal class TgsLogBackgroundProcessor<TRecord> : IDisposable
 {
 #pragma warning disable IDE0052 // 刪除未讀取的私用成員
+    private static ActivitySource _TgsLogBackgroundSource = new ActivitySource("Tgs.Logging.TgsLog");
     private readonly Task _background;
 #pragma warning restore IDE0052 // 刪除未讀取的私用成員
     private readonly CancellationTokenSource _cancellationTokenSource = new();
@@ -55,11 +56,16 @@ internal class TgsLogBackgroundProcessor<TRecord> : IDisposable
     }
 
     private Task BeginProcessLogAsync(CancellationToken cancellationToken) => Task.Run(() =>
-      {
-          foreach (var record in _logRecordEvents.GetConsumingEnumerable(cancellationToken))
-          {
-              var data = MessagePackSerializer.Serialize(record, _messagePackSerializerOptions);
-              _ = _messageSender.PublishAsync(_subject, data, cancellationToken).AsTask();
-          }
-      }, cancellationToken);
+    {
+        foreach (var record in _logRecordEvents.GetConsumingEnumerable(cancellationToken))
+        {
+            using (var activity = _TgsLogBackgroundSource.StartActivity("Push LogRecord to Log-Api"))
+            {
+                activity?.SetParentId(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom());
+
+                var data = MessagePackSerializer.Serialize(record, _messagePackSerializerOptions);
+                _ = _messageSender.PublishAsync(_subject, data, cancellationToken).AsTask();
+            }
+        }
+    }, cancellationToken);
 }

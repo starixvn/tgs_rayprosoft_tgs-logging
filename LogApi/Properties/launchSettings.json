@@ -6,7 +6,9 @@
 			"launchBrowser": true,
 			"launchUrl": "health",
 			"environmentVariables": {
-				"ASPNETCORE_ENVIRONMENT": "Development"
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "LogApi(local)",
+				"NODE_IP": "otel.rpgp.cc"
 			},
 			"applicationUrl": "https://localhost:6001;http://localhost:6000"
 		},
@@ -15,7 +17,12 @@
 			"launchBrowser": true,
 			"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
 			"publishAllPorts": true,
-			"useSSL": true
+			"useSSL": true,
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "LogApi(local)",
+				"NODE_IP": "otel.rpgp.cc"
+			}
 		}
 	}
 }
