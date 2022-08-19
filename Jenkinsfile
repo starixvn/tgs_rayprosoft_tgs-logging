@@ -4,7 +4,7 @@ pipeline {
     agent any
     
     environment {
-        ImageName = "harbor.rpgp.cc/tgs/log-api"
+        ImageName = "pgtgs/log-api"
         BuildConfiguration = 'Debug'
     }
 
