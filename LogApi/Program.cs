@@ -13,7 +13,9 @@ using TGS.Apis.LogApi.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .AddJsonFile("/config/appsettings.json", true);
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+builder.WebHost.UseUrls($"http://0.0.0.0:{builder.Configuration["HostingPort"]}");
 
 builder.Logging
     .AddOpenTelemetry(options =>
@@ -120,6 +122,6 @@ var app = builder.Build();
 
 app.MapControllers();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/");
 
 await app.RunAsync();

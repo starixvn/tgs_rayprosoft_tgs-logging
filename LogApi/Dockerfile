@@ -1,12 +1,13 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 ARG BuildConfiguration=Release
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM hub.lumigame.com/base/dotnet/core/sdk:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
+FROM hub.lumigame.com/base/dotnet/core/sdk:6.0 AS build
+# TODO: Remove for phase 1
+# RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
 ARG BuildConfiguration=Release
 WORKDIR /src
 COPY ["NuGet.config", "."]

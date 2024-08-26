@@ -4,7 +4,7 @@
 		"LogApi": {
 			"commandName": "Project",
 			"launchBrowser": true,
-			"launchUrl": "health",
+			"launchUrl": "",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development",
 				"OTEL_SERVICE_NAME": "LogApi(local)",
