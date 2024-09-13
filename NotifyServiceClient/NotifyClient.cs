@@ -31,6 +31,11 @@ namespace Tgs.NotifyService.Client
 
         public async ValueTask SendAsync(NotifyLogRequest request)
         {
+            if (!_options.Enabled)
+            {
+                return;
+            }
+
             var requestContent = new StringContent(JsonSerializer.Serialize(request));
 
             requestContent.Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Json);

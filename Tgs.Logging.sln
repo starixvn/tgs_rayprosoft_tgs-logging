@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31402.337
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Logging", "Tgs.Logging\Tgs.Logging.csproj", "{38C4B848-794A-4BA0-8DDB-BF039B220904}"
 EndProject
@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		NuGet.config = NuGet.config
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Logging.UnitTests", "Tgs.Logging.UnitTests\Tgs.Logging.UnitTests.csproj", "{79190C96-FB6B-4BBF-841B-DC1D66AB3F4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi", "LogApi\LogApi.csproj", "{8952AFC8-2338-4F4B-A077-E3CDDFACA626}"
 EndProject
@@ -23,12 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Repositories", "LogA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Models", "LogApi.Models\LogApi.Models.csproj", "{C0CAADDF-0560-4393-B775-FDA5003B4994}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.UnitTests", "LogApi.UnitTests\LogApi.UnitTests.csproj", "{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogApi.Repositories.UnitTests", "LogApi.Repositories.UnitTests\LogApi.Repositories.UnitTests.csproj", "{74B0B053-5209-44B4-B6BA-E05B21F77051}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogApi.IntegrationTests", "LogApi.IntegrationTests\LogApi.IntegrationTests.csproj", "{9C257665-A4DA-4241-8795-F5C46A18FA29}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +31,6 @@ Global
 		{38C4B848-794A-4BA0-8DDB-BF039B220904}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38C4B848-794A-4BA0-8DDB-BF039B220904}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38C4B848-794A-4BA0-8DDB-BF039B220904}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79190C96-FB6B-4BBF-841B-DC1D66AB3F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79190C96-FB6B-4BBF-841B-DC1D66AB3F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79190C96-FB6B-4BBF-841B-DC1D66AB3F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79190C96-FB6B-4BBF-841B-DC1D66AB3F4D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8952AFC8-2338-4F4B-A077-E3CDDFACA626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8952AFC8-2338-4F4B-A077-E3CDDFACA626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8952AFC8-2338-4F4B-A077-E3CDDFACA626}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,18 +51,6 @@ Global
 		{C0CAADDF-0560-4393-B775-FDA5003B4994}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0CAADDF-0560-4393-B775-FDA5003B4994}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0CAADDF-0560-4393-B775-FDA5003B4994}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCD3CA8F-B7B7-45EC-A7D6-42CD75572208}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74B0B053-5209-44B4-B6BA-E05B21F77051}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C257665-A4DA-4241-8795-F5C46A18FA29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TGS.Apis.LogApi.Filters;
@@ -95,28 +96,29 @@ builder.Services
 
                 config.GetSection("Opentelemetry:Tracing").Bind(exporterOptions);
             }))
-    .AddOpenTelemetryTracing(traceBuilder => traceBuilder
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddEnvironmentVariableDetector())
+     .AddOpenTelemetry()
+     .WithTracing(traceBuilder => traceBuilder
+         .SetResourceBuilder(ResourceBuilder.CreateDefault()
+             .AddEnvironmentVariableDetector())
         .AddSource("Tgs.*")
         .AddSource("TGS.*")
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
         .AddProfileViewExporter()
         .AddOtlpExporter())
-    .AddProfileViewer()
-    .Configure<AspNetCoreInstrumentationOptions>(options =>
-    {
-        options.Filter = httpContext =>
-        {
-            return !httpContext.Request.Path.HasValue
-                || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/health")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
-                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !new[] { "html", "ico", "png", "jpg" }.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
-        };
-    });
+     .WithMetrics(meterBuiler => meterBuiler
+         .AddRuntimeInstrumentation()
+         .AddAspNetCoreInstrumentation()
+         .AddOtlpExporter())
+     .Services
+     .Configure<AspNetCoreTraceInstrumentationOptions>(options => options.Filter =
+         httpContext => !httpContext.Request.Path.HasValue
+                        || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                        && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                        && !httpContext.Request.Path.StartsWithSegments("/metrics")
+                        && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                        && !new[] { "html", "ico", "png", "jpg" }.Any(
+                            ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
 
 var app = builder.Build();
 

@@ -1,26 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net5.0;</TargetFrameworks>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.19</Version>
+		<Version>0.0.20</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MessagePack" Version="2.3.85" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.1.46">
+		<PackageReference Include="MessagePack" Version="2.5.172" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.0"/>
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="PhoenixToolkits.NuGet.BuildTools" Version="0.0.1" />
-		<PackageReference Include="Tgs.MessageQueue.Nats" Version="2.1.4" />
+		<PackageReference Include="PhoenixToolkits.NuGet.BuildTools" Version="0.0.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Tgs.MessageQueue.Nats" Version="2.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,5 +38,6 @@
 		<PackageTags>Tgs Logging</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PackageId>Tgs.Logging</PackageId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 </Project>
