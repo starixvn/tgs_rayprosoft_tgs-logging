@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tgs.Logging;
 using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

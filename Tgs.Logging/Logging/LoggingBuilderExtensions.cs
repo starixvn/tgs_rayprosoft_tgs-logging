@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Configuration;
 using Tgs.Logging;
 using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Microsoft.Extensions.Logging;
 

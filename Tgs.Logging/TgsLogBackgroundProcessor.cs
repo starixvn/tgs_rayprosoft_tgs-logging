@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using MessagePack;
 using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Tgs.Logging;
 

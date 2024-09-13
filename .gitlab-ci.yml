@@ -5,4 +5,9 @@ include:
 
 variables:
   PUBLISH_NUGET: "true"
-  PROJECT_FOLDER: Tgs.Logging
+publish_nuget:
+  parallel:
+    matrix:
+      - PROJECT_FOLDER:
+          - Tgs.Logging
+          - LogApi.Models

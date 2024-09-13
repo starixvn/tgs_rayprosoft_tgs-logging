@@ -1,11 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net8.0;</TargetFrameworks>
-		<RootNamespace>Tgs.Logging</RootNamespace>
-		<Nullable>enable</Nullable>
-		<LangVersion>10.0</LangVersion>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <Version>0.0.21</Version>
+    <Authors>Raypro</Authors>
+    <IsPackable>true</IsPackable>
+    <LangVersion>10.0</LangVersion>
+    <PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-logging</PackageProjectUrl>
+    <RepositoryUrl>https://gitlab.com/rayprosoft/tgs-logging.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Tgs Logging</PackageTags>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackageId>Tgs.Logging.Models</PackageId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MessagePack" Version="2.5.172" />
