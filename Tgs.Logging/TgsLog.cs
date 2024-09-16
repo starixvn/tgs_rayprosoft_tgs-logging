@@ -37,7 +37,6 @@ internal class TgsLog : ITgsLog
 
     public void LogAdmin(AdminLogEvent adminEvent)
     {
-        adminEvent.TrackingId = TrackingId;
         _logger.Log(
             LogLevel.Information,
             new EventId(100, "AdminLog"),
@@ -49,7 +48,6 @@ internal class TgsLog : ITgsLog
 
     public void LogApi(ApiLogEvent apiLogEvent)
     {
-        apiLogEvent.TrackingId = TrackingId;
         _logger.Log(
             LogLevel.Information,
             new EventId(200, "ApiLog"),

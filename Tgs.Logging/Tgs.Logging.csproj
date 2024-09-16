@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.22</Version>
+		<Version>0.0.23</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
 		<LangVersion>10.0</LangVersion>
