@@ -1,7 +1,7 @@
 include:
   - project: ci/core-cicd
     ref: main
-    file: nexcel.gitlab-ci.yml
+    file: luminet.gitlab-ci.yml
 
 variables:
   PUBLISH_NUGET: "true"
