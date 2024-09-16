@@ -5,7 +5,7 @@ FROM hub.lumigame.com/base/dotnet/core/sdk:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM hub.lumigame.com/base/dotnet/core/sdk:8.0 AS build
+FROM hub.lumigame.com/base/dotnet/core/sdk:8.0 AS builder
 # TODO: Remove for phase 1
 # RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
 ARG BuildConfiguration=Release
@@ -21,7 +21,7 @@ COPY . .
 WORKDIR "/src/LogApi"
 RUN dotnet build "LogApi.csproj" -c $BuildConfiguration -o /app/build
 
-FROM build AS publish
+FROM builder AS publish
 ARG BuildConfiguration
 RUN dotnet publish "LogApi.csproj" -c $BuildConfiguration -o /app/publish
 

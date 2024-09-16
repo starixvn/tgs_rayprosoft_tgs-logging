@@ -4,7 +4,7 @@
 		"LogApi": {
 			"commandName": "Project",
 			"launchBrowser": true,
-			"launchUrl": "",
+			"launchUrl": "http://localhost:6001/api",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development",
 				"OTEL_SERVICE_NAME": "LogApi(local)",
