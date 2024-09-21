@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Tgs.Logging
@@ -45,7 +46,7 @@ namespace Tgs.Logging
                     Ip = context.Connection?.RemoteIpAddress?.ToString() ?? string.Empty,
                     Method = context.Request.Method,
                     Path = context.Request.Path,
-                    Prefix = context.Request.PathBase,
+                    Prefix = context.Request.GetDisplayUrl().Replace(context.Request.Path, ""),
                     RecordedOn = DateTimeOffset.Now,
                     RequestContent = request,
                     RequestHeaders = JsonSerializer.Serialize(context.Request.Headers, option),
