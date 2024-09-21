@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -29,7 +23,7 @@ namespace Tgs.Logging
             {
                 await next(context);
                 statusCode = context.Response.StatusCode;
-                response = isManual ? context.Items["ResponseContent"]?.ToString() ?? "" : await ReadStreamAsync(context.Response.Body);
+                response = isManual ? context.Items["ResponseContent"]?.ToString() ?? string.Empty : await ReadStreamAsync(context.Response.Body);
             }
             catch (Exception ex)
             {
@@ -40,7 +34,7 @@ namespace Tgs.Logging
             finally
             {
                 var timeEnd = DateTimeOffset.UtcNow;
-                string request = isManual ? context.Items["RequestContent"]?.ToString() ?? "" : await ReadStreamAsync(context.Request.Body);
+                string request = isManual ? context.Items["RequestContent"]?.ToString() ?? string.Empty : await ReadStreamAsync(context.Request.Body);
 
                 _ = Guid.TryParse(context.Items["TrackingId"]?.ToString(), out var trackingId);
                 var option = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -48,7 +42,7 @@ namespace Tgs.Logging
                 var apiCall = new ApiLogEvent
                 {
                     ExecutionTimeMs = ((int)timeEnd.Subtract(timeStart).TotalSeconds),
-                    Ip = context.Connection?.RemoteIpAddress?.ToString() ?? "",
+                    Ip = context.Connection?.RemoteIpAddress?.ToString() ?? string.Empty,
                     Method = context.Request.Method,
                     Path = context.Request.Path,
                     Prefix = context.Request.PathBase,
@@ -68,7 +62,7 @@ namespace Tgs.Logging
 
         private static async Task<string> ReadStreamAsync(Stream stream)
         {
-            string request = "";
+            string request = string.Empty;
 
             if (stream.CanRead)
             {
