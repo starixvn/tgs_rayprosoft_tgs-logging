@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.0.24</Version>
+		<Version>0.0.25</Version>
 		<Authors>Raypro</Authors>
 		<IsPackable>true</IsPackable>
     <PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-logging</PackageProjectUrl>
