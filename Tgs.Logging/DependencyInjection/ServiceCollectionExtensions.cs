@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tgs.Logging;
-using Tgs.MessageQueue;
 using Valhalla.MessageQueue;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -25,4 +24,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddTgsLogWithHttpLogging(this IServiceCollection services, Action<TgsApiLoggerOptions> configureOptions)
+        => services.AddTgsLog().Configure(configureOptions);
 }
